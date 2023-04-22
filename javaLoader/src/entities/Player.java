@@ -48,26 +48,32 @@ public class Player implements tickRender {
 				tile_speed--;
 			sqm_alvo = null;
 		} else if (sqm_alvo == null) {
-			boolean mover = false;
 			if (left) {
-				horizontal = -1;
-				mover = true;
+				if (x - SimpleMapLoader.TileSize >= 0)
+					horizontal = -1;
+
 			} else if (right) {
-				horizontal = 1;
-				mover = true;
+
+				if (x + SimpleMapLoader.TileSize < World.WIDTH * SimpleMapLoader.TileSize)
+					horizontal = 1;
+
 			} else {
 				horizontal = 0;
 			}
 			if (up) {
-				vertical = -1;
-				mover = true;
+
+				if (y - SimpleMapLoader.TileSize >= 0)
+					vertical = -1;
+
 			} else if (down) {
-				vertical = 1;
-				mover = true;
+
+				if (y + SimpleMapLoader.TileSize < World.HEIGHT * SimpleMapLoader.TileSize)
+					vertical = 1;
+
 			} else {
 				vertical = 0;
 			}
-			if (mover && !aBloqueadoMovimentacao) {
+			if ((horizontal != 0 || vertical != 0) && !aBloqueadoMovimentacao) {
 				boolean lInverteuVelocidade = false;
 				if (speed + tile_speed < 0) {
 					lInverteuVelocidade = true;
@@ -75,8 +81,8 @@ public class Player implements tickRender {
 					vertical *= -1;
 				}
 
-				sqm_alvo = World.pegar_chao(
-						World.calcular_pos(x + SimpleMapLoader.TileSize * horizontal, y + SimpleMapLoader.TileSize * vertical, z));
+				sqm_alvo = World.pegar_chao(World.calcular_pos(x + SimpleMapLoader.TileSize * horizontal,
+						y + SimpleMapLoader.TileSize * vertical, z));
 
 				if (sqm_alvo != null) {
 					if (sqm_alvo.Solid())
@@ -163,7 +169,8 @@ public class Player implements tickRender {
 	}
 
 	public void updateCamera() {
-		Camera.x = Camera.clamp(x - SimpleMapLoader.windowWidth / 2, 0, World.WIDTH * SimpleMapLoader.TileSize - SimpleMapLoader.windowWidth);
+		Camera.x = Camera.clamp(x - SimpleMapLoader.windowWidth / 2, 0,
+				World.WIDTH * SimpleMapLoader.TileSize - SimpleMapLoader.windowWidth);
 		Camera.y = Camera.clamp(y - SimpleMapLoader.windowHEIGHT / 2, 0,
 				World.HEIGHT * SimpleMapLoader.TileSize - SimpleMapLoader.windowHEIGHT);
 
@@ -175,8 +182,11 @@ public class Player implements tickRender {
 
 		if (sqm_alvo != null) {
 			g.setColor(new Color(175, 75, 50, 50));
-			g.fillRect(sqm_alvo.getX() - Camera.x - (sqm_alvo.getZ() - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize,
-					sqm_alvo.getY() - Camera.y - (sqm_alvo.getZ() - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize,
+			g.fillRect(
+					sqm_alvo.getX() - Camera.x
+							- (sqm_alvo.getZ() - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize,
+					sqm_alvo.getY() - Camera.y
+							- (sqm_alvo.getZ() - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize,
 					SimpleMapLoader.TileSize, SimpleMapLoader.TileSize);
 		}
 	}
