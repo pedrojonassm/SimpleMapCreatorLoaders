@@ -1,8 +1,9 @@
-package entities;
+package entities.allies;
 
 import java.awt.Color;
 import java.awt.Graphics;
 
+import entities.Entity;
 import main.SimpleMapLoader;
 import main.interfaces.tickRender;
 import world.Camera;

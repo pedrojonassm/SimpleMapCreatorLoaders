@@ -19,7 +19,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-import entities.Player;
+import entities.allies.Player;
 import files.SalvarCarregar;
 import graficos.Ui;
 import main.configs.ExConfig;
