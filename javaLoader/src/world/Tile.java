@@ -49,6 +49,14 @@ public class Tile {
 		return z;
 	}
 
+	public int getPosicao_Conjunto() {
+		return posicao_Conjunto;
+	}
+
+	public void setPosicao_Conjunto(int posicao_Conjunto) {
+		this.posicao_Conjunto = posicao_Conjunto;
+	}
+
 	public int getaPos() {
 		return aPos;
 	}
