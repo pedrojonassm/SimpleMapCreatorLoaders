@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import entities.Entity;
+import files.SalvarCarregar;
 import main.SimpleMapLoader;
 import main.interfaces.tickRender;
 import world.Camera;
@@ -19,6 +20,7 @@ public class Player extends Entity implements tickRender {
 	public void tick() {
 
 		super.tick();
+		colidindoTransporteParaOutroMundo();
 		updateCamera();
 	}
 
@@ -27,7 +29,21 @@ public class Player extends Entity implements tickRender {
 				World.WIDTH * SimpleMapLoader.TileSize - SimpleMapLoader.windowWidth);
 		Camera.y = Camera.clamp(y - SimpleMapLoader.windowHEIGHT / 2, 0,
 				World.HEIGHT * SimpleMapLoader.TileSize - SimpleMapLoader.windowHEIGHT);
+	}
 
+	private void colidindoTransporteParaOutroMundo() {
+		Tile lTile = World.pegar_chao(x + SimpleMapLoader.TileSize / 2, y + SimpleMapLoader.TileSize / 2, z);
+
+		if (lTile != null && lTile.getPropriedade("ToOtherWorld") != null) {
+			Tile lPosicao = World.pegar_chao(lTile.getX() + SimpleMapLoader.TileSize * horizontal * -1,
+					lTile.getY() + SimpleMapLoader.TileSize * vertical * -1, lTile.getZ());
+			setX(lPosicao.getX());
+			setY(lPosicao.getY());
+			setZ(lPosicao.getZ());
+			SalvarCarregar.salvar_mundo();
+			SalvarCarregar.toOtherWorld(lTile.getPropriedade("ToOtherWorld").toString());
+
+		}
 	}
 
 	public void render(Graphics g) {

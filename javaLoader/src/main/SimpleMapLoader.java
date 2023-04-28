@@ -45,6 +45,8 @@ public class SimpleMapLoader extends Canvas
 	private int aPos, aPosOld, aCliqueMouse;
 
 	private boolean clique_no_mapa;
+	private int arcoInicial, arcoFinal;
+
 	public static boolean control, shift;
 	public static Random random;
 	public static Ui ui;
@@ -55,6 +57,7 @@ public class SimpleMapLoader extends Canvas
 
 	public SimpleMapLoader() {
 		instance = this;
+		arcoInicial = arcoFinal = 0;
 		aConfig = new ExConfig();
 		memoria = new SalvarCarregar();
 		world = new World(null);
@@ -159,15 +162,30 @@ public class SimpleMapLoader extends Canvas
 
 		Graphics g = image.getGraphics();
 		g.setColor(new Color(0, 0, 0));
-		g.fillRect(0, 0, windowWidth, windowHEIGHT);
-		world.render(g);
+		g.fillRect(0, 0, windowWidth + TileSize, windowHEIGHT + TileSize);
+		if (World.ready && World.ok) {
+			world.render(g);
 
-		g.setColor(Color.red);
-		int[] localDesenho = Uteis.calcularPosicaoSemAltura(aPos);
-		g.drawRect(localDesenho[0], localDesenho[1], TileSize, TileSize);
+			g.setColor(Color.red);
+			int[] localDesenho = Uteis.calcularPosicaoSemAltura(aPos);
+			g.drawRect(localDesenho[0], localDesenho[1], TileSize, TileSize);
 
-		player.render(g);
-		ui.render(g);
+			player.render(g);
+			ui.render(g);
+		} else {
+			g.setColor(Color.white);
+			arcoInicial += 5;
+			if (arcoInicial >= 360) {
+				arcoInicial = 30;
+			}
+
+			arcoFinal += 3;
+			if (arcoFinal >= 360)
+				arcoFinal = 0;
+
+			g.drawArc(windowWidth / 2 - TileSize / 2, windowHEIGHT / 2 - TileSize / 2, TileSize, TileSize, arcoInicial,
+					arcoFinal);
+		}
 		g.dispose();
 		g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, windowWidth, windowHEIGHT, null);
@@ -186,13 +204,12 @@ public class SimpleMapLoader extends Canvas
 			delta += (now - lastTime) / ns;
 			lastTime = now;
 			if (delta >= 1) {
-				if (World.ready && World.ok) {
-					try {
+				try {
+					if (World.ready && World.ok)
 						tick();
-						render();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					render();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				frames++;
 				delta = 0;

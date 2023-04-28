@@ -2,8 +2,11 @@ package files;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -60,6 +63,36 @@ public class SalvarCarregar {
 			}
 		}
 		return retorno;
+	}
+
+	public static void salvarConfiguracoesMundo() throws IOException {
+		File lFileworld = new File(World.aArquivo, nameFileWorldconfig);
+		BufferedWriter writer = new BufferedWriter(new FileWriter(lFileworld));
+
+		SimpleMapLoader.aConfig.atualizarAntesSalvar();
+
+		writer.write(toJSON(SimpleMapLoader.aConfig));
+		writer.flush();
+		writer.close();
+
+	}
+
+	public static void salvar_mundo() {
+
+		String salvar = "";
+		salvar += SalvarCarregar.toJSON(World.tiles);
+		try {
+			salvarConfiguracoesMundo();
+			File lFileworld = new File(World.aArquivo, nameFileWorld);
+			if (!lFileworld.exists())
+				lFileworld.createNewFile();
+			BufferedWriter writer = new BufferedWriter(new FileWriter(lFileworld));
+			writer.write(salvar);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static ArrayList<String> listFoldersInFolder(final File folder) {
@@ -145,6 +178,16 @@ public class SalvarCarregar {
 				}
 
 			}
+		}
+	}
+
+	public static void toOtherWorld(String prNomeMundo) {
+		File lPastaMundo = new File(aArquivoMundos, prNomeMundo), lConfigs, lArquivoMundo;
+		if (lPastaMundo.exists() && lPastaMundo.isDirectory()) {
+			lConfigs = new File(lPastaMundo, nameFileWorld);
+			lArquivoMundo = new File(lPastaMundo, nameFileWorld);
+			if (lConfigs.exists() && lArquivoMundo.exists())
+				World.novo_mundo(lPastaMundo);
 		}
 	}
 }

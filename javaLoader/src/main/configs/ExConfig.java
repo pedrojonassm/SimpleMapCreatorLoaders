@@ -1,5 +1,7 @@
 package main.configs;
 
+import main.SimpleMapLoader;
+
 public class ExConfig {
 
 	private int worldWidth, worldHeight, worldHigh, TileSize, playerX, playerY, playerZ, totalLayers;
@@ -66,6 +68,12 @@ public class ExConfig {
 
 	public void setPlayerZ(int playerZ) {
 		this.playerZ = playerZ;
+	}
+
+	public void atualizarAntesSalvar() {
+		setPlayerX(SimpleMapLoader.player.getX());
+		setPlayerY(SimpleMapLoader.player.getY());
+		setPlayerZ(SimpleMapLoader.player.getZ());
 	}
 
 }

@@ -140,7 +140,6 @@ public class World {
 	}
 
 	public static void novo_mundo(File file) {
-		// TODO carregar mundo corretamente
 		ready = false;
 		SimpleMapLoader.aConfig = new ExConfig();
 		SimpleMapLoader.world = new World(file);
