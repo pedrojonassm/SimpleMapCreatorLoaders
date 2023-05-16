@@ -18,7 +18,7 @@ public class World {
 	public static int WIDTH, HEIGHT, HIGH;
 	public static HashMap<String, BufferedImage[]> spritesCarregados;
 
-	public static int log_ts, tiles_index, tiles_animation_time, max_tiles_animation_time;
+	public static int log_ts, tiles_index, tiles_animation_time, max_tiles_animation_time, maxRenderingZ;
 	public static boolean ready, ok;
 	public static File aArquivo;
 
@@ -100,6 +100,29 @@ public class World {
 				tiles_index = 0;
 			}
 		}
+
+		int xstart = Camera.x >> log_ts;
+		int ystart = Camera.y >> log_ts;
+
+		int xfinal = xstart + (SimpleMapLoader.windowWidth >> log_ts) + 1;
+		int yfinal = ystart + (SimpleMapLoader.windowHEIGHT >> log_ts) + 1;
+
+		if ((xstart -= (SimpleMapLoader.player.getZ() + 1)) < 0)
+			xstart = 0;
+		if ((ystart -= (SimpleMapLoader.player.getZ() + 1)) < 0)
+			ystart = 0;
+
+		for (int xx = xstart; xx <= xfinal; xx++)
+			for (int yy = ystart; yy <= yfinal; yy++) {
+				if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
+					continue;
+				}
+
+				Tile lTile = tiles[(xx + (yy * WIDTH)) * HIGH + SimpleMapLoader.player.getZ()];
+				if (lTile != null)
+					lTile.tick();
+			}
+
 	}
 
 	public void render(Graphics g) {
@@ -115,20 +138,20 @@ public class World {
 			ystart = 0;
 
 		Tile t;
-		int maxZ = HIGH;
-		for (int i = 0; i < HIGH - SimpleMapLoader.player.getZ() - 1; i++) {
-			t = pegar_chao(((SimpleMapLoader.player.getX() >> log_ts) + (i + 1) + (i + 1) * WIDTH
-					+ (SimpleMapLoader.player.getY() >> log_ts) * WIDTH) * HIGH + SimpleMapLoader.player.getZ() + 1);
+		maxRenderingZ = HIGH;
+		for (int i = 1; i < HIGH - SimpleMapLoader.player.getZ(); i++) {
+			t = pegar_chao(SimpleMapLoader.player.getX() + SimpleMapLoader.TileSize,
+					SimpleMapLoader.player.getY() + SimpleMapLoader.TileSize, SimpleMapLoader.player.getZ() + 1);
 
 			if (t != null && t.tem_sprites()) {
-				maxZ = t.getZ();
+				maxRenderingZ = t.getZ();
 				break;
 			}
 		}
 
 		for (int xx = xstart; xx <= xfinal; xx++)
 			for (int yy = ystart; yy <= yfinal; yy++)
-				for (int zz = 0; zz < maxZ; zz++) {
+				for (int zz = 0; zz < maxRenderingZ; zz++) {
 					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
 					}

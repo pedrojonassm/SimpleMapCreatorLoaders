@@ -5,14 +5,22 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import entities.Entity;
+import entities.ai.PathFinder;
+import entities.allies.npc.Monika;
+import entities.allies.npc.NPC;
+import entities.allies.npc.Sebastiao;
 import graficos.ConjuntoSprites;
 import graficos.telas.Sprite;
 import main.SimpleMapLoader;
+import main.Uteis;
+import main.interfaces.tickRender;
 
-public class Tile {
+public class Tile implements tickRender {
 	private ArrayList<ConjuntoSprites> CoConjuntoSprites;
 	private int x, y, z, aPos, posicao_Conjunto;
 
@@ -69,6 +77,28 @@ public class Tile {
 		return CoConjuntoSprites.get(posicao_Conjunto).obterSprite_atual();
 	}
 
+	@Override
+	public void tick() {
+		if (aPropriedades != null && aPropriedades.containsKey("NPC")) {
+			boolean lSummon = true;
+			for (Entity iEntity : SimpleMapLoader.entities) {
+				if (iEntity instanceof NPC && ((NPC) iEntity).obterPosOrigem() == aPos) {
+					lSummon = false;
+					break;
+				}
+			}
+			if (lSummon) {
+				if ("Sebastiao".contentEquals(aPropriedades.get("NPC").toString())) {
+					SimpleMapLoader.entities.add(new Sebastiao(this, aPropriedades.get("NPC").toString()));
+				} else if ("Monika".contentEquals(aPropriedades.get("NPC").toString())) {
+					SimpleMapLoader.entities.add(new Monika(this, aPropriedades.get("NPC").toString()));
+				}
+			}
+
+		}
+	}
+
+	@Override
 	public void render(Graphics g) {
 
 		if (posicao_Conjunto < CoConjuntoSprites.size() && CoConjuntoSprites.get(posicao_Conjunto) != null)
@@ -102,6 +132,25 @@ public class Tile {
 
 	public void setZ(int z) {
 		this.z = z;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Tile utilizarEscada() {
+		HashMap<String, Object> lHashMap = (HashMap<String, Object>) getPropriedade("TRANSPORT");
+		if (lHashMap == null || lHashMap.get("DESTINY") == null)
+			return null;
+
+		return World.pegarAdicionarTileMundo(
+				Tile.pegarPosicaoRelativa(getX(), getY(), getZ(), (List<Integer>) lHashMap.get("DESTINY")));
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public boolean isEscada() {
+		HashMap<String, Object> lHashMap = (HashMap<String, Object>) getPropriedade("TRANSPORT");
+		if (lHashMap == null || lHashMap.get("DESTINY") == null)
+			return false;
+		return true;
 	}
 
 	public boolean tem_sprites() {
@@ -193,6 +242,44 @@ public class Tile {
 	public static int pegarPosicaoRelativa(int prFromX, int prFromY, int prFromZ, List<Integer> prPosicaoRelativa) {
 		return World.calcular_pos(prFromX + (prPosicaoRelativa.get(0) << World.log_ts),
 				prFromY + (prPosicaoRelativa.get(1) << World.log_ts), prFromZ + prPosicaoRelativa.get(2));
+	}
+
+	public void dispararEventos() {
+		for (Entry<String, Object> iEntrySet : aPropriedades.entrySet()) {
+			System.out.println(iEntrySet.getKey() + " = " + iEntrySet.getValue());
+		}
+		if (aPropriedades.containsKey("evento")) {
+			if ("CallMonika".contentEquals(aPropriedades.get("evento").toString())) {
+				if (Uteis.distancia(x, SimpleMapLoader.player.getX(), y,
+						SimpleMapLoader.player.getY()) <= SimpleMapLoader.TileSize)
+					for (Entity iEntity : SimpleMapLoader.entities) {
+						if (iEntity instanceof Monika) {
+							((Monika) iEntity).saltar();
+							ArrayList<Tile> lCoTile = PathFinder.point(
+									World.pegar_chao(iEntity.getX(), iEntity.getY(), iEntity.getZ()),
+									World.pegar_chao(SimpleMapLoader.player.getX(), SimpleMapLoader.player.getY(),
+											SimpleMapLoader.player.getZ()));
+							lCoTile.remove(lCoTile.size() - 1);
+							iEntity.setaCaminho(lCoTile);
+						}
+					}
+			} else if ("CallSebastiao".contentEquals(aPropriedades.get("evento").toString())
+					|| "QuebrarPorco".contentEquals(aPropriedades.get("evento").toString())) {
+				if (Uteis.distancia(x, SimpleMapLoader.player.getX(), y,
+						SimpleMapLoader.player.getY()) <= SimpleMapLoader.TileSize)
+					for (Entity iEntity : SimpleMapLoader.entities) {
+						if (iEntity instanceof Sebastiao) {
+							((Sebastiao) iEntity).saltar();
+							ArrayList<Tile> lCoTile = PathFinder.point(
+									World.pegar_chao(iEntity.getX(), iEntity.getY(), iEntity.getZ()),
+									World.pegar_chao(SimpleMapLoader.player.getX(), SimpleMapLoader.player.getY(),
+											SimpleMapLoader.player.getZ()));
+							lCoTile.remove(lCoTile.size() - 1);
+							iEntity.setaCaminho(lCoTile);
+						}
+					}
+			}
+		}
 	}
 
 }

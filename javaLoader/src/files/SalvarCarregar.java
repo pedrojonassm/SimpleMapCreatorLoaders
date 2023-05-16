@@ -24,19 +24,22 @@ import world.World;
 
 public class SalvarCarregar {
 
-	public static File aArquivoMundos;
+	public static File aArquivoMundos, aArquivoPersonagens;
 
 	private ArrayList<String> mundosDisponiveis;
 
 	public static final String nameFileWorld = "world.world", nameFileWorldconfig = "world.config",
-			startWorldName = "MundoInicial", nameFolderImagens = "imagens", nameFileImageData = "data.config",
+			startWorldName = "Castelo", nameFolderImagens = "imagens", nameFileImageData = "data.config",
 			nameImagem = "image.png";
 
 	public SalvarCarregar() {
 		try {
 			aArquivoMundos = new File(URLDecoder.decode(getClass().getResource("/mundos").getFile(), "UTF-8"));
+			aArquivoPersonagens = new File(
+					URLDecoder.decode(getClass().getResource("/personagens").getFile(), "UTF-8"));
 			if (aArquivoMundos.exists()) {
 				mundosDisponiveis = listFoldersInFolder(aArquivoMundos);
+
 			} else {
 				mundosDisponiveis = new ArrayList<>();
 			}

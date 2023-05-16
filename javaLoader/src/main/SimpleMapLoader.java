@@ -15,10 +15,13 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JFrame;
 
+import entities.Entity;
+import entities.ai.PathFinder;
 import entities.allies.Player;
 import files.SalvarCarregar;
 import graficos.Ui;
@@ -40,6 +43,7 @@ public class SimpleMapLoader extends Canvas
 	public static World world;
 
 	public static Player player;
+	public static ArrayList<Entity> entities;
 	public SalvarCarregar memoria;
 
 	private int aPos, aPosOld, aCliqueMouse;
@@ -62,6 +66,7 @@ public class SimpleMapLoader extends Canvas
 		memoria = new SalvarCarregar();
 		world = new World(null);
 		if (World.ok) {
+			entities = new ArrayList<>();
 			startGerador();
 			initFrame();
 		}
@@ -148,6 +153,8 @@ public class SimpleMapLoader extends Canvas
 				}
 			}
 		}
+		for (Entity iEntity : entities)
+			iEntity.tick();
 		player.tick();
 		world.tick();
 		ui.tick();
@@ -169,6 +176,8 @@ public class SimpleMapLoader extends Canvas
 			g.setColor(Color.red);
 			int[] localDesenho = Uteis.calcularPosicaoSemAltura(aPos);
 			g.drawRect(localDesenho[0], localDesenho[1], TileSize, TileSize);
+			for (Entity iEntity : entities)
+				iEntity.render(g);
 
 			player.render(g);
 			ui.render(g);
@@ -252,6 +261,10 @@ public class SimpleMapLoader extends Canvas
 			Ui.mostrar = !Ui.mostrar;
 			return;
 		}
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+			player.saltar();
+			return;
+		}
 
 	}
 
@@ -313,10 +326,25 @@ public class SimpleMapLoader extends Canvas
 			if (ui.cliquedireito(e.getX(), e.getY()))
 				return;
 			else {
+				Tile lTile = World.tiles[aPos];
+				if (lTile != null) {
+					if (lTile.getaPropriedades() != null) {
+						lTile.dispararEventos();
+					}
+				}
+				if (control) {
+					ArrayList<Tile> lCoTile = PathFinder.point(
+							World.pegar_chao(player.getX(), player.getY(), player.getZ()), World.pegar_chao(aPos));
+					player.setaCaminho(lCoTile);
+				}
 				clique_no_mapa = true;
 				aCliqueMouse = 3;
 			}
 		}
+	}
+
+	public int getaPos() {
+		return aPos;
 	}
 
 	@Override

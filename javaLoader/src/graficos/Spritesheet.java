@@ -11,16 +11,33 @@ import main.configs.ExSpriteSheet;
 public class Spritesheet extends ExSpriteSheet {
 
 	private BufferedImage spritesheet;
-	private int quadradosX, quadradosY;
+	private int quadradosX, quadradosY, tamanhoX, tamanhoY;
 
 	public Spritesheet(File prArquivo, ExSpriteSheet prSpriteSheet) {
 		totalSprites = prSpriteSheet.getTotalSprites();
 		tamanho = prSpriteSheet.getTamanho();
 		nome = prSpriteSheet.getNome();
+		tamanhoX = tamanhoY = tamanho;
 		try {
 			spritesheet = ImageIO.read(prArquivo);
-			quadradosX = spritesheet.getWidth() / tamanho;
-			quadradosY = spritesheet.getHeight() / tamanho;
+			quadradosX = spritesheet.getWidth() / tamanhoX;
+			quadradosY = spritesheet.getHeight() / tamanhoY;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public Spritesheet(File prArquivo, int prTotalSprites, int prTamanhoX, int prTamanhoY, String prNome) {
+		totalSprites = prTotalSprites;
+		tamanho = prTamanhoX;
+		tamanhoX = prTamanhoX;
+		tamanhoY = prTamanhoY;
+		nome = prNome;
+		try {
+			spritesheet = ImageIO.read(prArquivo);
+			quadradosX = spritesheet.getWidth() / tamanhoX;
+			quadradosY = spritesheet.getHeight() / tamanhoY;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -32,8 +49,8 @@ public class Spritesheet extends ExSpriteSheet {
 	}
 
 	public BufferedImage getAsset(int position) {
-		return spritesheet.getSubimage((position % quadradosX) * tamanho, (position / quadradosX) * tamanho, tamanho,
-				tamanho);
+		return spritesheet.getSubimage((position % quadradosX) * tamanhoX, (position / quadradosX) * tamanhoY, tamanhoX,
+				tamanhoY);
 	}
 
 	public BufferedImage[] get_x_sprites(int total) {
