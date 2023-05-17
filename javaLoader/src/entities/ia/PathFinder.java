@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import main.SimpleMapLoader;
-import main.Uteis;
 import world.Tile;
 import world.World;
 
@@ -15,6 +14,7 @@ public class PathFinder {
 			return new ArrayList<>();
 		HashMap<Integer, ArrayList<Path>> lCaminho = new HashMap<>();
 		ArrayList<Path> lCaminhoAuxiliar = new ArrayList<>();
+		ArrayList<Tile> lRetorno = new ArrayList<>();
 		lCaminhoAuxiliar.add(new Path(null, prInicio));
 		lCaminho.put(0, lCaminhoAuxiliar);
 		ArrayList<Integer> lVerificados = new ArrayList<>();
@@ -50,35 +50,10 @@ public class PathFinder {
 		}
 
 		lPath = lCaminhoAuxiliar.get(lCaminhoAuxiliar.size() - 1);
-		ArrayList<Tile> lRetorno = new ArrayList<>(), lRetornoAux = new ArrayList<>();
 		do {
-			lRetornoAux.add(lPath.getlTile());
+			lRetorno.add(0, lPath.getlTile());
 			lPath = lPath.getFrom();
 		} while (lPath != null);
-
-		lRetorno.add(0, lRetornoAux.get(0));
-		lRetornoAux.remove(0);
-		Tile iTile = lRetorno.get(0), jTile;
-
-		int lProximo = 0;
-		while (lRetornoAux.size() > 1) {
-			for (int j = 1; j < lRetornoAux.size(); j++) {
-				jTile = lRetornoAux.get(j);
-				if (Uteis.distancia(iTile.getX(), jTile.getX(), iTile.getY(), jTile.getY()) <= SimpleMapLoader.TileSize
-						* 1.5) {
-					lProximo = j;
-				}
-			}
-			lRetorno.add(0, lRetornoAux.get(lProximo));
-
-			for (int j = 0; j < lProximo; j++)
-				lRetornoAux.remove(0);
-
-			lProximo = 0;
-			iTile = lRetornoAux.get(lProximo);
-		}
-
-		lRetorno.add(0, lRetornoAux.get(0));
 
 		return lRetorno;
 	}
