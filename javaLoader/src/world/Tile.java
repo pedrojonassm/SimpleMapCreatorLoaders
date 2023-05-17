@@ -17,7 +17,6 @@ import entities.ia.PathFinder;
 import graficos.ConjuntoSprites;
 import graficos.telas.Sprite;
 import main.SimpleMapLoader;
-import main.Uteis;
 import main.interfaces.tickRender;
 
 public class Tile implements tickRender {
@@ -250,9 +249,8 @@ public class Tile implements tickRender {
 		}
 		if (aPropriedades.containsKey("evento")) {
 			if ("CallMonika".contentEquals(aPropriedades.get("evento").toString())) {
-				if (Uteis.distancia(x + SimpleMapLoader.TileSize / 2,
-						SimpleMapLoader.player.getX() + SimpleMapLoader.TileSize / 2, y + SimpleMapLoader.TileSize / 2,
-						SimpleMapLoader.player.getY() + SimpleMapLoader.TileSize / 2) <= SimpleMapLoader.TileSize)
+				if ((x + SimpleMapLoader.player.getX()) / 2 <= SimpleMapLoader.TileSize
+						&& (y + SimpleMapLoader.player.getY()) / 2 <= SimpleMapLoader.TileSize)
 					for (Entity iEntity : SimpleMapLoader.entities) {
 						if (iEntity instanceof Monika) {
 							((Monika) iEntity).saltar();
@@ -266,9 +264,9 @@ public class Tile implements tickRender {
 					}
 			} else if ("CallSebastiao".contentEquals(aPropriedades.get("evento").toString())
 					|| "QuebrarPorco".contentEquals(aPropriedades.get("evento").toString())) {
-				if (Uteis.distancia(x + SimpleMapLoader.TileSize / 2,
-						SimpleMapLoader.player.getX() + SimpleMapLoader.TileSize / 2, y + SimpleMapLoader.TileSize / 2,
-						SimpleMapLoader.player.getY() + SimpleMapLoader.TileSize / 2) <= SimpleMapLoader.TileSize)
+
+				if ((x + SimpleMapLoader.player.getX()) / 2 <= SimpleMapLoader.TileSize
+						&& (y + SimpleMapLoader.player.getY()) / 2 <= SimpleMapLoader.TileSize)
 					for (Entity iEntity : SimpleMapLoader.entities) {
 						if (iEntity instanceof Sebastiao) {
 							((Sebastiao) iEntity).saltar();

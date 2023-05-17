@@ -13,7 +13,7 @@ public class Monika extends NPC {
 		if (SalvarCarregar.aArquivoPersonagens != null && SalvarCarregar.aArquivoPersonagens.exists()) {
 			File lImagem = new File(SalvarCarregar.aArquivoPersonagens, "monika.png");
 			if (lImagem.exists()) {
-				Spritesheet lSpritesheet = new Spritesheet(lImagem, 12, 32, 36, "semNome");
+				Spritesheet lSpritesheet = new Spritesheet(lImagem, 12, 32, 36, "Monika");
 				sprites = lSpritesheet.get_x_sprites(lSpritesheet.getTotalSprites());
 			}
 			forceRenderSize = true;
