@@ -35,6 +35,8 @@ public class PathFinder {
 
 				for (int horizontal = -1; horizontal <= 1 && !lBreak; horizontal++)
 					for (int vertical = -1; vertical <= 1 && !lBreak; vertical++) {
+						if (horizontal == vertical && vertical == 0)
+							continue;
 						lTo = World.pegar_chao(World.calcular_pos(iTile.getX() + SimpleMapLoader.TileSize * horizontal,
 								iTile.getY() + SimpleMapLoader.TileSize * vertical, iTile.getZ()));
 						lBreak = verificarAdicionarLista(lVerificados, lCaminhoAuxiliar, prDestino, iPath, lTo);
