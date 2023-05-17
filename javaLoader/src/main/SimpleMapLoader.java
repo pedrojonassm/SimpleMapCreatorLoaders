@@ -21,8 +21,8 @@ import java.util.Random;
 import javax.swing.JFrame;
 
 import entities.Entity;
-import entities.ai.PathFinder;
 import entities.allies.Player;
+import entities.ia.PathFinder;
 import files.SalvarCarregar;
 import graficos.Ui;
 import main.configs.ExConfig;

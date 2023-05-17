@@ -1,4 +1,4 @@
-package entities.ai;
+package entities.ia;
 
 import world.Tile;
 

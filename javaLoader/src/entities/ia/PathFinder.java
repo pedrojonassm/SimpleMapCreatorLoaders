@@ -1,4 +1,4 @@
-package entities.ai;
+package entities.ia;
 
 import java.util.ArrayList;
 import java.util.HashMap;

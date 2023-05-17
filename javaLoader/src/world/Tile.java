@@ -10,10 +10,10 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import entities.Entity;
-import entities.ai.PathFinder;
 import entities.allies.npc.Monika;
 import entities.allies.npc.NPC;
 import entities.allies.npc.Sebastiao;
+import entities.ia.PathFinder;
 import graficos.ConjuntoSprites;
 import graficos.telas.Sprite;
 import main.SimpleMapLoader;
