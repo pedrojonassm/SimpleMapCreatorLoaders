@@ -44,6 +44,10 @@ public class Player extends Entity implements tickRender {
 			minSpriteAnimation = 9;
 			maxSpriteAnimation = 11;
 		}
+		if (sqm_alvo != null && sqm_alvo.getaPropriedades() != null && sqm_alvo.getaPropriedades().containsKey("Solid")
+				&& "Monika".contentEquals(sqm_alvo.getPropriedade("Solid").toString())) {
+
+		}
 		super.tick();
 		colidindoTransporteParaOutroMundo();
 		updateCamera();
@@ -86,6 +90,8 @@ public class Player extends Entity implements tickRender {
 
 		if (aCaminho != null) {
 			for (Tile iTile : aCaminho) {
+				if (iTile.getZ() != z)
+					continue;
 				g.setColor(new Color(175, 75, 50, 80));
 				g.fillRect(
 						iTile.getX() - Camera.x

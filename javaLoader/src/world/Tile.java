@@ -17,6 +17,7 @@ import entities.ia.PathFinder;
 import graficos.ConjuntoSprites;
 import graficos.telas.Sprite;
 import main.SimpleMapLoader;
+import main.Uteis;
 import main.interfaces.tickRender;
 
 public class Tile implements tickRender {
@@ -249,10 +250,12 @@ public class Tile implements tickRender {
 		}
 		if (aPropriedades.containsKey("evento")) {
 			if ("CallMonika".contentEquals(aPropriedades.get("evento").toString())) {
-				if ((x + SimpleMapLoader.player.getX()) / 2 <= SimpleMapLoader.TileSize
-						&& (y + SimpleMapLoader.player.getY()) / 2 <= SimpleMapLoader.TileSize)
+				if (Uteis.distancia(x + SimpleMapLoader.TileSize / 2,
+						SimpleMapLoader.player.getX() + SimpleMapLoader.TileSize / 2, y + SimpleMapLoader.TileSize / 2,
+						SimpleMapLoader.player.getY() + SimpleMapLoader.TileSize / 2) <= SimpleMapLoader.TileSize * 1.5)
 					for (Entity iEntity : SimpleMapLoader.entities) {
 						if (iEntity instanceof Monika) {
+
 							((Monika) iEntity).saltar();
 							ArrayList<Tile> lCoTile = PathFinder.point(
 									World.pegar_chao(iEntity.getX(), iEntity.getY(), iEntity.getZ()),
@@ -264,9 +267,9 @@ public class Tile implements tickRender {
 					}
 			} else if ("CallSebastiao".contentEquals(aPropriedades.get("evento").toString())
 					|| "QuebrarPorco".contentEquals(aPropriedades.get("evento").toString())) {
-
-				if ((x + SimpleMapLoader.player.getX()) / 2 <= SimpleMapLoader.TileSize
-						&& (y + SimpleMapLoader.player.getY()) / 2 <= SimpleMapLoader.TileSize)
+				if (Uteis.distancia(x + SimpleMapLoader.TileSize / 2,
+						SimpleMapLoader.player.getX() + SimpleMapLoader.TileSize / 2, y + SimpleMapLoader.TileSize / 2,
+						SimpleMapLoader.player.getY() + SimpleMapLoader.TileSize / 2) <= SimpleMapLoader.TileSize * 1.5)
 					for (Entity iEntity : SimpleMapLoader.entities) {
 						if (iEntity instanceof Sebastiao) {
 							((Sebastiao) iEntity).saltar();
