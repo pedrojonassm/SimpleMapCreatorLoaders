@@ -209,7 +209,16 @@ public class Entity implements tickRender {
 
 	public void utilizarEscada(Tile prTile) {
 		Tile lTile = prTile.utilizarEscada();
+		boolean lUtilizar = false;
 		if (lTile != null) {
+			if (aCaminho == null || aCaminho.size() == 0)
+				lUtilizar = true;
+			else {
+				if (aCaminho.size() > 1 && aCaminho.get(1).getaPos() == lTile.getaPos())
+					lUtilizar = true;
+			}
+		}
+		if (lUtilizar) {
 			x = lTile.getX();
 			y = lTile.getY();
 			z = lTile.getZ();

@@ -224,6 +224,16 @@ public class Tile implements tickRender {
 		return false;
 	}
 
+	public boolean playerSolid() {
+		if (aPropriedades == null || getPropriedade("Solid") == null)
+			return false;
+		if (Solid())
+			return true;
+		if ("Monika".contentEquals(getPropriedade("Solid").toString()) && !SimpleMapLoader.monika.isSleep())
+			return true;
+		return false;
+	}
+
 	public List<ConjuntoSprites> getCoConjuntoSprites() {
 		return CoConjuntoSprites;
 	}

@@ -33,28 +33,41 @@ public class Astar {
 	}
 
 	public static ArrayList<Tile> findPath(Tile start, Tile end) {
-		List<Node> lCoNodes = findPath(SimpleMapLoader.world, new Vector2i(start.getX(), start.getY(), start.getZ()),
-				new Vector2i(end.getX(), end.getY(), end.getZ()));
+		return findPath(start, end, false);
+	}
+
+	public static ArrayList<Tile> findPath(Tile start, Tile end, boolean isPlayer) {
+		List<Node> lCoNodes = findPath(new Vector2i(start.getX(), start.getY(), start.getZ()),
+				new Vector2i(end.getX(), end.getY(), end.getZ()), isPlayer);
 		if (lCoNodes == null || lCoNodes.size() == 0)
 			return new ArrayList<>();
 		else {
 			ArrayList<Tile> lRetorno = new ArrayList<>();
 			Node lNode = lCoNodes.get(0);
+			Tile lTile = null;
 			while (lNode != null) {
-				lRetorno.add(0, World.pegar_chao(lNode.tile.x, lNode.tile.y, lNode.tile.z));
+				lTile = World.pegar_chao(lNode.tile.x, lNode.tile.y, lNode.tile.z);
+				lRetorno.add(0, lTile);
 				lNode = lNode.parent;
 			}
 			return lRetorno;
 		}
 	}
 
-	public static List<Node> findPath(World world, Vector2i start, Vector2i end) {
+	public static List<Node> findPath(Vector2i start, Vector2i end, boolean isPlayer) {
 		lastTime = System.currentTimeMillis();
 		List<Node> openList = new ArrayList<Node>();
 		List<Node> closedList = new ArrayList<Node>();
 
-		Node current = new Node(start, null, 0, nextCost(start, end));
+		Node current = new Node(start, null, 0, 1), atual;
 		openList.add(current);
+		int x, y, z;
+		Tile tile;
+		Vector2i a;
+		Node node;
+		double gCost;
+		double hCost;
+
 		while (openList.size() > 0) {
 			Collections.sort(openList, nodeSorter);
 			current = openList.get(0);
@@ -72,28 +85,31 @@ public class Astar {
 			openList.remove(current);
 			closedList.add(current);
 
-			int x, y, z;
+			atual = current;
 
 			for (int horizontal = -1; horizontal <= 1; horizontal++)
 				for (int vertical = -1; vertical <= 1; vertical++) {
 					if (horizontal == vertical && vertical == 0)
 						continue;
 
+					current = atual;
+
 					x = current.tile.x;
 					y = current.tile.y;
 					z = current.tile.z;
-					Tile tile = World.pegar_chao(x + horizontal * SimpleMapLoader.TileSize,
+					tile = World.pegar_chao(x + horizontal * SimpleMapLoader.TileSize,
 							y + vertical * SimpleMapLoader.TileSize, z);
-					if (tile == null || tile.Solid())
+					if (tile == null || (tile.isEscada() && vecInList(openList, current.tile))
+							|| ((!isPlayer && tile.Solid()) || (isPlayer && tile.playerSolid())))
 						continue;
 
 					do {
-						Vector2i a = new Vector2i(tile.getX(), tile.getY(), tile.getZ());
-						double gCost = current.gCost + nextCost(current.tile, a)
-								+ (tile.isEscada() ? SimpleMapLoader.TileSize * 2 : 0);
-						double hCost = nextCost(a, end);
 
-						Node node = new Node(a, current, gCost, hCost);
+						a = new Vector2i(tile.getX(), tile.getY(), tile.getZ());
+						gCost = current.gCost + 1 + (tile.isEscada() ? 4 : 0);
+						hCost = nextCost(a, end);
+
+						node = new Node(a, current, gCost, hCost);
 
 						if (vecInList(closedList, a) && gCost >= current.gCost) {
 							break;
@@ -104,6 +120,10 @@ public class Astar {
 						} else if (gCost < current.gCost) {
 							openList.remove(current);
 							openList.add(node);
+						}
+
+						if (tile.isEscada()) {
+							current = node;
 						}
 
 					} while ((tile = tile.utilizarEscada()) != null);

@@ -319,7 +319,7 @@ public class SimpleMapLoader extends Canvas
 				aCliqueMouse = 1;
 				aTrocouPosicao = true;
 				player.setaCaminho(Astar.findPath(World.pegar_chao(player.getX(), player.getY(), player.getZ()),
-						World.pegar_chao(aPos)));
+						World.pegar_chao(aPos), true));
 				return;
 			} else {
 				ui.cliqueUi = true;
