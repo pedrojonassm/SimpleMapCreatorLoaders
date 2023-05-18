@@ -59,6 +59,8 @@ public class Monika extends NPC {
 			aSleep = true;
 		} else if (Talks.nameTentarSubirEscada.contentEquals(prTalk)) {
 			SimpleMapLoader.podeNovaMovimentacao = true;
+		} else if (Talks.nameMexeuAlavanca.contentEquals(prTalk)) {
+			SimpleMapLoader.podeNovaMovimentacao = true;
 		}
 	}
 

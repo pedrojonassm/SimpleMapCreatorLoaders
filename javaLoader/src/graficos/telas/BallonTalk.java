@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import entities.Entity;
+import entities.allies.Player;
+import entities.allies.npc.Monika;
+import entities.allies.npc.Sebastiao;
 import entities.allies.npc.Talks;
 import main.SimpleMapLoader;
 import main.interfaces.tickRender;
@@ -44,7 +47,12 @@ public class BallonTalk implements tickRender {
 	public void render(Graphics prGraphics) {
 		if (falas != null && falas.length > 0) {
 			prGraphics.setFont(prGraphics.getFont().deriveFont(22f));
-			prGraphics.setColor(Color.WHITE);
+			if (falando instanceof Monika)
+				prGraphics.setColor(Color.PINK);
+			if (falando instanceof Sebastiao)
+				prGraphics.setColor(Color.GREEN);
+			if (falando instanceof Player)
+				prGraphics.setColor(Color.WHITE);
 			prGraphics.drawString(falas[fala], falando.getX() - Camera.x,
 					falando.getY() - SimpleMapLoader.TileSize - Camera.y);
 		}
