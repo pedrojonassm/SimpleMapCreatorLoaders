@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import main.SimpleMapLoader;
-import main.Uteis;
 import world.Tile;
 import world.World;
 
@@ -59,14 +58,13 @@ public class Astar {
 		List<Node> openList = new ArrayList<Node>();
 		List<Node> closedList = new ArrayList<Node>();
 
-		Node current = new Node(start, null, 0, 1), atual;
+		Node current = new Node(start, null, 0), atual;
 		openList.add(current);
 		int x, y, z;
 		Tile tile;
 		Vector2i a;
 		Node node;
 		double gCost;
-		double hCost;
 
 		while (openList.size() > 0) {
 			Collections.sort(openList, nodeSorter);
@@ -106,10 +104,9 @@ public class Astar {
 					do {
 
 						a = new Vector2i(tile.getX(), tile.getY(), tile.getZ());
-						gCost = current.gCost + 1 + (tile.isEscada() ? 4 : 0);
-						hCost = nextCost(a, end);
+						gCost = current.gCost + 1 + (tile.isEscada() ? 5 : 0);
 
-						node = new Node(a, current, gCost, hCost);
+						node = new Node(a, current, gCost);
 
 						if (vecInList(closedList, a) && gCost >= current.gCost) {
 							break;
@@ -144,10 +141,4 @@ public class Astar {
 		return false;
 	}
 
-	private static double nextCost(Vector2i tile, Vector2i goal) {
-		double dx = tile.x - goal.x;
-		double dy = tile.y - goal.y;
-
-		return Math.pow(Math.sqrt(dx * dx + dy * dy), Uteis.modulo(tile.z - goal.z) + 1);
-	}
 }
