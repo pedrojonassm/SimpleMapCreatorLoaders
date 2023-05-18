@@ -10,10 +10,8 @@ public class Uteis {
 	}
 
 	public static double modulo(double prValor) {
-		if (prValor >= 0)
-			return prValor;
-		else
-			return prValor *= -1;
+
+		return Math.sqrt(prValor * prValor);
 	}
 
 	public static int log(int prValor, int prLogaritmo) {

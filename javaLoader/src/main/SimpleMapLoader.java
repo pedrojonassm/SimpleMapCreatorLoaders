@@ -22,7 +22,9 @@ import javax.swing.JFrame;
 
 import entities.Entity;
 import entities.allies.Player;
-import entities.ia.PathFinder;
+import entities.allies.npc.Monika;
+import entities.allies.npc.Sebastiao;
+import entities.ia.Astar;
 import files.SalvarCarregar;
 import graficos.Ui;
 import main.configs.ExConfig;
@@ -43,6 +45,8 @@ public class SimpleMapLoader extends Canvas
 	public static World world;
 
 	public static Player player;
+	public static Sebastiao sebastiao;
+	public static Monika monika;
 	public static ArrayList<Entity> entities;
 	public SalvarCarregar memoria;
 
@@ -59,12 +63,15 @@ public class SimpleMapLoader extends Canvas
 
 	public static SimpleMapLoader instance;
 
+	public static boolean podeNovaMovimentacao;
+
 	public SimpleMapLoader() {
 		instance = this;
 		arcoInicial = arcoFinal = 0;
 		aConfig = new ExConfig();
 		memoria = new SalvarCarregar();
 		world = new World(null);
+		podeNovaMovimentacao = true;
 		if (World.ok) {
 			entities = new ArrayList<>();
 			startGerador();
@@ -258,7 +265,7 @@ public class SimpleMapLoader extends Canvas
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT)
 			shift = true;
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			Ui.mostrar = !Ui.mostrar;
+			// Ui.mostrar = !Ui.mostrar;
 			return;
 		}
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -311,6 +318,8 @@ public class SimpleMapLoader extends Canvas
 				clique_no_mapa = true;
 				aCliqueMouse = 1;
 				aTrocouPosicao = true;
+				player.setaCaminho(Astar.findPath(World.pegar_chao(player.getX(), player.getY(), player.getZ()),
+						World.pegar_chao(aPos)));
 				return;
 			} else {
 				ui.cliqueUi = true;
@@ -331,11 +340,6 @@ public class SimpleMapLoader extends Canvas
 					if (lTile.getaPropriedades() != null) {
 						lTile.dispararEventos();
 					}
-				}
-				if (control) {
-					ArrayList<Tile> lCoTile = PathFinder.point(
-							World.pegar_chao(player.getX(), player.getY(), player.getZ()), World.pegar_chao(aPos));
-					player.setaCaminho(lCoTile);
 				}
 				clique_no_mapa = true;
 				aCliqueMouse = 3;

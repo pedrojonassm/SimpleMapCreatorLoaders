@@ -47,7 +47,7 @@ public class Entity implements tickRender {
 
 	@Override
 	public void tick() {
-		if (sqm_alvo != null
+		if (sqm_alvo != null && sqm_alvo.getZ() == z
 				&& Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= Uteis.modulo(speed + tile_speed)) {
 			x = sqm_alvo.getX();
 			y = sqm_alvo.getY();
@@ -77,30 +77,32 @@ public class Entity implements tickRender {
 					vertical = -1;
 
 			} else {
-				if (left) {
-					if (x - SimpleMapLoader.TileSize >= 0)
-						horizontal = -1;
+				if (SimpleMapLoader.podeNovaMovimentacao) {
+					if (left) {
+						if (x - SimpleMapLoader.TileSize >= 0)
+							horizontal = -1;
 
-				} else if (right) {
+					} else if (right) {
 
-					if (x + SimpleMapLoader.TileSize < World.WIDTH * SimpleMapLoader.TileSize)
-						horizontal = 1;
+						if (x + SimpleMapLoader.TileSize < World.WIDTH * SimpleMapLoader.TileSize)
+							horizontal = 1;
 
-				} else {
-					horizontal = 0;
-				}
-				if (up) {
+					} else {
+						horizontal = 0;
+					}
+					if (up) {
 
-					if (y - SimpleMapLoader.TileSize >= 0)
-						vertical = -1;
+						if (y - SimpleMapLoader.TileSize >= 0)
+							vertical = -1;
 
-				} else if (down) {
+					} else if (down) {
 
-					if (y + SimpleMapLoader.TileSize < World.HEIGHT * SimpleMapLoader.TileSize)
-						vertical = 1;
+						if (y + SimpleMapLoader.TileSize < World.HEIGHT * SimpleMapLoader.TileSize)
+							vertical = 1;
 
-				} else {
-					vertical = 0;
+					} else {
+						vertical = 0;
+					}
 				}
 				if (horizontal == 0 && vertical == 0) {
 					maxSpriteAnimation = (minSpriteAnimation + maxSpriteAnimation) / 2;
@@ -148,19 +150,23 @@ public class Entity implements tickRender {
 		salto += sinalSalto;
 		if (salto == 0)
 			sinalSalto = 0;
-		else if (salto == saltoMaximo)
+		else if (salto >= saltoMaximo)
 			sinalSalto = -1;
 
 		colidindo_com_escada();
 	}
 
+	public boolean isMoving() {
+		return sqm_alvo != null || aCaminho.size() > 0;
+	}
+
 	public void changeAnimation() {
 		if (vertical == 1) {
-			minSpriteAnimation = 0;
-			maxSpriteAnimation = 2;
-		} else if (vertical == -1) {
 			minSpriteAnimation = 6;
 			maxSpriteAnimation = 8;
+		} else if (vertical == -1) {
+			minSpriteAnimation = 0;
+			maxSpriteAnimation = 2;
 		}
 		if (horizontal == 1) {
 			minSpriteAnimation = 3;

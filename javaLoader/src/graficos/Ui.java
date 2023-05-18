@@ -4,25 +4,27 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
+import graficos.telas.BallonTalk;
 import graficos.telas.Tela;
-import main.SimpleMapLoader;
 
 public class Ui implements Tela {
 	public static boolean mostrar;
 
 	public static ArrayList<Runnable> renderizarDepois;
 
+	public static BallonTalk aBallonTalk;
+
 	public boolean cliqueUi;
 
 	public Ui() {
 		cliqueUi = false;
-		mostrar = false;
+		mostrar = true;
 		renderizarDepois = new ArrayList<>();
-
+		aBallonTalk = new BallonTalk();
 	}
 
 	public void tick() {
-
+		aBallonTalk.tick();
 	}
 
 	public void render(Graphics g) {
@@ -41,14 +43,17 @@ public class Ui implements Tela {
 			renderizarDepois.clear();
 		}
 
+		aBallonTalk.render(g);
+
 		g.setColor(Color.white);
-		if (mostrar) {
-			int w1 = g.getFontMetrics().stringWidth("Ui aberta!");
-			g.drawString("Ui aberta!", SimpleMapLoader.windowWidth / 2 - w1 / 2, SimpleMapLoader.windowHEIGHT - 20);
-		}
 	}
 
 	public boolean clicou(int x, int y) {
+		if (aBallonTalk.contemFalas()) {
+			aBallonTalk.next();
+			return true;
+		}
+
 		if (!mostrar)
 			return false;
 
