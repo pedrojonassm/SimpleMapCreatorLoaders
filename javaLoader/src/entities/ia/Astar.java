@@ -107,9 +107,6 @@ public class Astar {
 
 					do {
 
-						if (tile.getaPos() == 1345)
-							tile = tile;
-
 						a = new Vector2i(tile.getX(), tile.getY(), tile.getZ());
 						gCost = current.gCost + 1 + (tile.isEscada() ? 5 : 0);
 
