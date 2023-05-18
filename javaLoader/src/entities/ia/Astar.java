@@ -86,7 +86,7 @@ public class Astar {
 			atual = current;
 
 			if (World.pegar_chao(current.tile.x, current.tile.y, current.tile.z).isEscada()
-					&& (vecInList(closedList, current.tile) || vecInList(openList, current.tile))) {
+					&& vecInList(closedList, current.tile)) {
 				continue;
 			}
 
