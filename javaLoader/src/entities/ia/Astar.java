@@ -85,6 +85,11 @@ public class Astar {
 
 			atual = current;
 
+			if (World.pegar_chao(current.tile.x, current.tile.y, current.tile.z).isEscada()
+					&& (vecInList(closedList, current.tile) || vecInList(openList, current.tile))) {
+				continue;
+			}
+
 			for (int horizontal = -1; horizontal <= 1; horizontal++)
 				for (int vertical = -1; vertical <= 1; vertical++) {
 					if (horizontal == vertical && vertical == 0)
@@ -97,11 +102,13 @@ public class Astar {
 					z = current.tile.z;
 					tile = World.pegar_chao(x + horizontal * SimpleMapLoader.TileSize,
 							y + vertical * SimpleMapLoader.TileSize, z);
-					if (tile == null || (tile.isEscada() && vecInList(openList, current.tile))
-							|| ((!isPlayer && tile.Solid()) || (isPlayer && tile.playerSolid())))
+					if (tile == null || ((!isPlayer && tile.Solid()) || (isPlayer && tile.playerSolid())))
 						continue;
 
 					do {
+
+						if (tile.getaPos() == 1345)
+							tile = tile;
 
 						a = new Vector2i(tile.getX(), tile.getY(), tile.getZ());
 						gCost = current.gCost + 1 + (tile.isEscada() ? 5 : 0);
