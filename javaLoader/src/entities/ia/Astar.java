@@ -108,7 +108,8 @@ public class Astar {
 					do {
 
 						a = new Vector2i(tile.getX(), tile.getY(), tile.getZ());
-						gCost = current.gCost + 1 + (tile.isEscada() ? 5 : 0);
+						gCost = current.gCost + ((vertical != 0 && horizontal != 0) ? 3 : 1)
+								+ (tile.isEscada() ? 5 : 0);
 
 						node = new Node(a, current, gCost);
 
@@ -118,7 +119,7 @@ public class Astar {
 
 						if (!vecInList(openList, a)) {
 							openList.add(node);
-						} else if (gCost < current.gCost) {
+						} else if (gCost < current.gCost + current.fCost) {
 							openList.remove(current);
 							openList.add(node);
 						}
