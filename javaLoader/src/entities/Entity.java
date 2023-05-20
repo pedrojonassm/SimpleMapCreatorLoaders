@@ -2,7 +2,6 @@ package entities;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -15,12 +14,10 @@ import world.World;
 
 public class Entity implements tickRender {
 
-	protected int x, y, z, tile_speed, salto, saltoMaximo, sinalSalto;
+	protected int x, y, z, tile_speed;
 	public boolean left, right, up, down, aBloqueadoMovimentacao;
 
-	protected BufferedImage[] sprites;
-	protected int horizontal, vertical, speed, spriteADesenhar, animationTime, maxAnimationTime, minSpriteAnimation,
-			maxSpriteAnimation;
+	protected int horizontal, vertical, speed;
 
 	protected boolean forceRenderSize;
 
@@ -34,13 +31,8 @@ public class Entity implements tickRender {
 		this.horizontal = z;
 		tile_speed = 0;
 		left = right = up = down = aBloqueadoMovimentacao = false;
-		spriteADesenhar = 0;
-		saltoMaximo = 10;
-		sinalSalto = 0;
-		salto = 0;
 		speed = 4;
 		horizontal = vertical = 0;
-		maxAnimationTime = animationTime = minSpriteAnimation = maxSpriteAnimation = 0;
 		forceRenderSize = false;
 		aCaminho = new ArrayList<>();
 	}
@@ -104,10 +96,6 @@ public class Entity implements tickRender {
 						vertical = 0;
 					}
 				}
-				if (horizontal == 0 && vertical == 0) {
-					maxSpriteAnimation = (minSpriteAnimation + maxSpriteAnimation) / 2;
-					minSpriteAnimation = maxSpriteAnimation;
-				}
 			}
 			changeAnimation();
 			if ((horizontal != 0 || vertical != 0) && !aBloqueadoMovimentacao) {
@@ -135,23 +123,9 @@ public class Entity implements tickRender {
 				}
 			}
 		} else {
-			if (spriteADesenhar >= minSpriteAnimation && spriteADesenhar <= maxSpriteAnimation) {
-				x += (speed + tile_speed) * horizontal;
-				y += (speed + tile_speed) * vertical;
-			}
+			x += (speed + tile_speed) * horizontal;
+			y += (speed + tile_speed) * vertical;
 		}
-
-		if (++animationTime >= maxAnimationTime) {
-			if (++spriteADesenhar > maxSpriteAnimation)
-				spriteADesenhar = minSpriteAnimation;
-			animationTime = 0;
-		}
-
-		salto += sinalSalto;
-		if (salto == 0)
-			sinalSalto = 0;
-		else if (salto >= saltoMaximo)
-			sinalSalto = -1;
 
 		colidindo_com_escada();
 	}
@@ -161,28 +135,10 @@ public class Entity implements tickRender {
 	}
 
 	public void changeAnimation() {
-		if (vertical == 1) {
-			minSpriteAnimation = 6;
-			maxSpriteAnimation = 8;
-		} else if (vertical == -1) {
-			minSpriteAnimation = 0;
-			maxSpriteAnimation = 2;
-		}
-		if (horizontal == 1) {
-			minSpriteAnimation = 3;
-			maxSpriteAnimation = 5;
-		} else if (horizontal == -1) {
-			minSpriteAnimation = 9;
-			maxSpriteAnimation = 11;
-		}
 	}
 
 	public void setaCaminho(ArrayList<Tile> prCaminho) {
 		this.aCaminho = prCaminho;
-	}
-
-	public void saltar() {
-		sinalSalto = 1;
 	}
 
 	private void colidindo_com_escada() {
@@ -232,18 +188,9 @@ public class Entity implements tickRender {
 		Tile lTileAcima = World.pegar_chao(x, y, z + 1);
 		if (z == SimpleMapLoader.player.getZ()
 				&& (lTileAcima == null || lTileAcima.getZ() >= World.maxRenderingZ || !lTileAcima.tem_sprites())) {
-			if (sprites == null || spriteADesenhar >= sprites.length) {
-				prGraphics.setColor(Color.WHITE);
-				prGraphics.fillRect(x - Camera.x - salto, y - Camera.y - salto, SimpleMapLoader.TileSize,
-						SimpleMapLoader.TileSize);
-			} else {
-				prGraphics.setColor(Color.WHITE);
-				if (forceRenderSize)
-					prGraphics.drawImage(sprites[spriteADesenhar], x - Camera.x - salto, y - Camera.y - salto,
-							SimpleMapLoader.TileSize, SimpleMapLoader.TileSize, null);
-				else
-					prGraphics.drawImage(sprites[spriteADesenhar], x - Camera.x - salto, y - Camera.y - salto, null);
-			}
+			prGraphics.setColor(Color.WHITE);
+			prGraphics.fillRect(x - Camera.x, y - Camera.y, SimpleMapLoader.TileSize, SimpleMapLoader.TileSize);
+
 		}
 	}
 

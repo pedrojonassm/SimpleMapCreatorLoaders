@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-import graficos.telas.BallonTalk;
 import graficos.telas.Tela;
 
 public class Ui implements Tela {
@@ -12,19 +11,15 @@ public class Ui implements Tela {
 
 	public static ArrayList<Runnable> renderizarDepois;
 
-	public static BallonTalk aBallonTalk;
-
 	public boolean cliqueUi;
 
 	public Ui() {
 		cliqueUi = false;
 		mostrar = true;
 		renderizarDepois = new ArrayList<>();
-		aBallonTalk = new BallonTalk();
 	}
 
 	public void tick() {
-		aBallonTalk.tick();
 	}
 
 	public void render(Graphics g) {
@@ -43,17 +38,10 @@ public class Ui implements Tela {
 			renderizarDepois.clear();
 		}
 
-		aBallonTalk.render(g);
-
 		g.setColor(Color.white);
 	}
 
 	public boolean clicou(int x, int y) {
-		if (aBallonTalk.contemFalas()) {
-			aBallonTalk.next();
-			return true;
-		}
-
 		if (!mostrar)
 			return false;
 

@@ -9,17 +9,9 @@ import java.util.Map.Entry;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import entities.Entity;
-import entities.allies.npc.Monika;
-import entities.allies.npc.NPC;
-import entities.allies.npc.Sebastiao;
-import entities.allies.npc.Talks;
-import entities.ia.Astar;
 import graficos.ConjuntoSprites;
-import graficos.Ui;
 import graficos.telas.Sprite;
 import main.SimpleMapLoader;
-import main.Uteis;
 import main.interfaces.tickRender;
 
 public class Tile implements tickRender {
@@ -81,25 +73,6 @@ public class Tile implements tickRender {
 
 	@Override
 	public void tick() {
-		if (aPropriedades != null && aPropriedades.containsKey("NPC")) {
-			boolean lSummon = true;
-			for (Entity iEntity : SimpleMapLoader.entities) {
-				if (iEntity instanceof NPC && ((NPC) iEntity).obterPosOrigem() == aPos) {
-					lSummon = false;
-					break;
-				}
-			}
-			if (lSummon) {
-				if ("Sebastiao".contentEquals(aPropriedades.get("NPC").toString())) {
-					SimpleMapLoader.sebastiao = new Sebastiao(this, aPropriedades.get("NPC").toString());
-					SimpleMapLoader.entities.add(SimpleMapLoader.sebastiao);
-				} else if ("Monika".contentEquals(aPropriedades.get("NPC").toString())) {
-					SimpleMapLoader.monika = new Monika(this, aPropriedades.get("NPC").toString());
-					SimpleMapLoader.entities.add(SimpleMapLoader.monika);
-				}
-			}
-
-		}
 	}
 
 	@Override
@@ -229,8 +202,6 @@ public class Tile implements tickRender {
 			return false;
 		if (Solid())
 			return true;
-		if ("Monika".contentEquals(getPropriedade("Solid").toString()) && !SimpleMapLoader.monika.isSleep())
-			return true;
 		return false;
 	}
 
@@ -268,122 +239,6 @@ public class Tile implements tickRender {
 	public void dispararEventos() {
 		for (Entry<String, Object> iEntrySet : aPropriedades.entrySet()) {
 			System.out.println(iEntrySet.getKey() + " = " + iEntrySet.getValue());
-		}
-		if (aPropriedades.containsKey("evento")) {
-			if ("CallMonika".contentEquals(aPropriedades.get("evento").toString())) {
-
-				if (Uteis.distancia(x + SimpleMapLoader.TileSize / 2,
-						SimpleMapLoader.player.getX() + SimpleMapLoader.TileSize / 2, y + SimpleMapLoader.TileSize / 2,
-						SimpleMapLoader.player.getY() + SimpleMapLoader.TileSize / 2) <= SimpleMapLoader.TileSize
-								* 1.5) {
-					if (!SimpleMapLoader.monika.isSleep()) {
-						SimpleMapLoader.monika.saltar();
-						ArrayList<Tile> lCoTile = Astar.findPath(
-								World.pegar_chao(SimpleMapLoader.monika.getX(), SimpleMapLoader.monika.getY(),
-										SimpleMapLoader.monika.getZ()),
-								World.pegar_chao(SimpleMapLoader.player.getX(), SimpleMapLoader.player.getY(),
-										SimpleMapLoader.player.getZ()));
-						lCoTile.remove(lCoTile.size() - 1);
-						SimpleMapLoader.monika.setaCaminho(lCoTile);
-						if (aPropriedades.containsKey("monstro")) {
-							SimpleMapLoader.monika.setaFala(Talks.nameMexeuAlavanca);
-							SimpleMapLoader.podeNovaMovimentacao = false;
-						}
-					} else {
-						posicao_Conjunto = 1;
-						if (posicao_Conjunto >= CoConjuntoSprites.size())
-							posicao_Conjunto = 0;
-					}
-				}
-			} else if ("CallSebastiao".contentEquals(aPropriedades.get("evento").toString())) {
-				if (Uteis.distancia(x + SimpleMapLoader.TileSize / 2,
-						SimpleMapLoader.player.getX() + SimpleMapLoader.TileSize / 2, y + SimpleMapLoader.TileSize / 2,
-						SimpleMapLoader.player.getY() + SimpleMapLoader.TileSize / 2) <= SimpleMapLoader.TileSize
-								* 1.5) {
-
-					if (!SimpleMapLoader.sebastiao.isSleep()) {
-
-						SimpleMapLoader.sebastiao.saltar();
-						ArrayList<Tile> lCoTile = Astar.findPath(
-								World.pegar_chao(SimpleMapLoader.sebastiao.getX(), SimpleMapLoader.sebastiao.getY(),
-										SimpleMapLoader.sebastiao.getZ()),
-								World.pegar_chao(SimpleMapLoader.player.getX(), SimpleMapLoader.player.getY(),
-										SimpleMapLoader.player.getZ()));
-						lCoTile.remove(lCoTile.size() - 1);
-						SimpleMapLoader.sebastiao.setaCaminho(lCoTile);
-
-						SimpleMapLoader.sebastiao.setaFala(Talks.nameMexeuAnemona);
-						SimpleMapLoader.podeNovaMovimentacao = false;
-					} else {
-						posicao_Conjunto = 1;
-						if (posicao_Conjunto >= CoConjuntoSprites.size())
-							posicao_Conjunto = 0;
-						if (!SimpleMapLoader.monika.isSleep()) {
-							SimpleMapLoader.monika.saltar();
-							ArrayList<Tile> lCoTile = Astar.findPath(World.pegar_chao(SimpleMapLoader.monika.getX(),
-									SimpleMapLoader.monika.getY(), SimpleMapLoader.monika.getZ()), this);
-							lCoTile.remove(lCoTile.size() - 1);
-							SimpleMapLoader.monika.setaCaminho(lCoTile);
-							SimpleMapLoader.monika.setaFala(Talks.nameMatouAnemona);
-							SimpleMapLoader.podeNovaMovimentacao = false;
-						}
-					}
-				}
-			} else if ("QuebrarPorco".contentEquals(aPropriedades.get("evento").toString())) {
-				if (Uteis.distancia(x + SimpleMapLoader.TileSize / 2,
-						SimpleMapLoader.player.getX() + SimpleMapLoader.TileSize / 2, y + SimpleMapLoader.TileSize / 2,
-						SimpleMapLoader.player.getY() + SimpleMapLoader.TileSize / 2) <= SimpleMapLoader.TileSize
-								* 1.5) {
-					posicao_Conjunto = 1;
-					if (posicao_Conjunto >= CoConjuntoSprites.size())
-						posicao_Conjunto = 0;
-					if (!SimpleMapLoader.sebastiao.isSleep()) {
-						SimpleMapLoader.sebastiao.saltar();
-						ArrayList<Tile> lCoTile = Astar
-								.findPath(
-										World.pegar_chao(SimpleMapLoader.sebastiao.getX(),
-												SimpleMapLoader.sebastiao.getY(), SimpleMapLoader.sebastiao.getZ()),
-										World.pegar_chao(x, y, z));
-						lCoTile.remove(lCoTile.size() - 1);
-						SimpleMapLoader.sebastiao.setaCaminho(lCoTile);
-
-						SimpleMapLoader.sebastiao.setaFala(Talks.namePorcoQuebrou);
-
-						SimpleMapLoader.monika.saltar();
-						lCoTile = Astar.findPath(World.pegar_chao(SimpleMapLoader.monika.getX(),
-								SimpleMapLoader.monika.getY(), SimpleMapLoader.monika.getZ()),
-								World.pegar_chao(x, y, z));
-						lCoTile.remove(lCoTile.size() - 1);
-						SimpleMapLoader.monika.setaCaminho(lCoTile);
-
-						SimpleMapLoader.podeNovaMovimentacao = false;
-					}
-				}
-			} else if ("DestrancarPorta".contentEquals(aPropriedades.get("evento").toString())) {
-				if (Uteis.distancia(x + SimpleMapLoader.TileSize / 2,
-						SimpleMapLoader.player.getX() + SimpleMapLoader.TileSize / 2, y + SimpleMapLoader.TileSize / 2,
-						SimpleMapLoader.player.getY() + SimpleMapLoader.TileSize / 2) <= SimpleMapLoader.TileSize
-								* 1.5) {
-					posicao_Conjunto = 1;
-					if (posicao_Conjunto >= CoConjuntoSprites.size())
-						posicao_Conjunto = 0;
-					SimpleMapLoader.player.setContemChave(true);
-
-				}
-			} else if ("Porta".contentEquals(aPropriedades.get("evento").toString())) {
-				if (SimpleMapLoader.player.isContemChave()) {
-					posicao_Conjunto++;
-					if (posicao_Conjunto >= CoConjuntoSprites.size())
-						posicao_Conjunto = 0;
-				}
-			} else if ("Fujir".contentEquals(aPropriedades.get("evento").toString())) {
-				if (SimpleMapLoader.player.isContemChave()) {
-					Ui.aBallonTalk.setFalas(Talks.FinishGame);
-					Ui.aBallonTalk.next();
-					SimpleMapLoader.podeNovaMovimentacao = false;
-					Ui.aBallonTalk.adicionarAcaoAposFalar(() -> SimpleMapLoader.podeNovaMovimentacao = true);
-				}
-			}
 		}
 	}
 

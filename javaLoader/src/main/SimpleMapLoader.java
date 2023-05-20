@@ -22,8 +22,6 @@ import javax.swing.JFrame;
 
 import entities.Entity;
 import entities.allies.Player;
-import entities.allies.npc.Monika;
-import entities.allies.npc.Sebastiao;
 import entities.ia.Astar;
 import files.SalvarCarregar;
 import graficos.Ui;
@@ -45,8 +43,6 @@ public class SimpleMapLoader extends Canvas
 	public static World world;
 
 	public static Player player;
-	public static Sebastiao sebastiao;
-	public static Monika monika;
 	public static ArrayList<Entity> entities;
 	public SalvarCarregar memoria;
 
@@ -269,7 +265,6 @@ public class SimpleMapLoader extends Canvas
 			return;
 		}
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-			player.saltar();
 			return;
 		}
 
