@@ -9,5 +9,6 @@ public class Node {
 		this.tile = tile;
 		this.parent = parent;
 		this.gCost = gCoste;
+		this.fCost = gCoste + ((parent == null) ? 0 : parent.fCost);
 	}
 }

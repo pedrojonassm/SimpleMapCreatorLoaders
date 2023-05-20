@@ -89,81 +89,47 @@ public class Astar {
 					&& vecInList(closedList, current.tile)) {
 				continue;
 			}
-			int horizontal = 0, vertical = 0;
-			for (int aoRedor = 0; aoRedor < 8; aoRedor++) {
-				switch (aoRedor) {
-				case 0:
-					horizontal = 1;
-					vertical = 0;
-					break;
-				case 1:
-					horizontal = 0;
-					vertical = 1;
-					break;
-				case 2:
-					horizontal = -1;
-					vertical = 0;
-					break;
-				case 3:
-					horizontal = 0;
-					vertical = -1;
-					break;
-				case 4:
-					horizontal = 1;
-					vertical = -1;
-					break;
-				case 5:
-					horizontal = 1;
-					vertical = 1;
-					break;
-				case 6:
-					horizontal = -1;
-					vertical = 1;
-					break;
-				case 7:
-					horizontal = -1;
-					vertical = -1;
-					break;
+			for (int horizontal = -1; horizontal <= 1; horizontal++)
+				for (int vertical = -1; vertical <= 1; vertical++) {
+					if (horizontal == vertical && vertical == 0)
+						continue;
+
+					current = atual;
+
+					x = current.tile.x;
+					y = current.tile.y;
+					z = current.tile.z;
+					tile = World.pegar_chao(x + horizontal * SimpleMapLoader.TileSize,
+							y + vertical * SimpleMapLoader.TileSize, z);
+					if (tile == null || ((!isPlayer && tile.Solid()) || (isPlayer && tile.playerSolid())))
+						continue;
+
+					do {
+
+						a = new Vector2i(tile.getX(), tile.getY(), tile.getZ());
+						gCost = current.gCost + ((horizontal != 0 && vertical != 0) ? 2 : 1)
+								+ (tile.isEscada() ? 3 : 0);
+
+						node = new Node(a, current, gCost);
+
+						if (vecInList(closedList, a) && gCost >= current.gCost + current.fCost) {
+							break;
+						}
+
+						if (!vecInList(openList, a)) {
+							openList.add(node);
+						} else if (gCost < current.gCost) {
+							openList.remove(current);
+							openList.add(node);
+						}
+
+						if (tile.isEscada()) {
+							current = node;
+						}
+
+					} while ((tile = tile.utilizarEscada()) != null);
 
 				}
-				if (horizontal == vertical && vertical == 0)
-					continue;
-
-				current = atual;
-
-				x = current.tile.x;
-				y = current.tile.y;
-				z = current.tile.z;
-				tile = World.pegar_chao(x + horizontal * SimpleMapLoader.TileSize,
-						y + vertical * SimpleMapLoader.TileSize, z);
-				if (tile == null || ((!isPlayer && tile.Solid()) || (isPlayer && tile.playerSolid())))
-					continue;
-
-				do {
-
-					a = new Vector2i(tile.getX(), tile.getY(), tile.getZ());
-					gCost = current.gCost + 1 + (tile.isEscada() ? 3 : 0);
-
-					node = new Node(a, current, gCost);
-
-					if (vecInList(closedList, a) && gCost >= current.gCost) {
-						break;
-					}
-
-					if (!vecInList(openList, a)) {
-						openList.add(node);
-					} else if (gCost < current.gCost) {
-						openList.remove(current);
-						openList.add(node);
-					}
-
-					if (tile.isEscada()) {
-						current = node;
-					}
-
-				} while ((tile = tile.utilizarEscada()) != null);
-
-			}
 
 		}
 		closedList.clear();
