@@ -108,7 +108,7 @@ public class Astar {
 					do {
 
 						a = new Vector2i(tile.getX(), tile.getY(), tile.getZ());
-						gCost = current.gCost + 1 + (tile.isEscada() ? 5 : 0);
+						gCost = current.gCost + 1 + (tile.isEscada() ? 3 : 0);
 
 						node = new Node(a, current, gCost);
 
