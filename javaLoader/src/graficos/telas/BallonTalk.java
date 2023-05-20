@@ -53,8 +53,10 @@ public class BallonTalk implements tickRender {
 				prGraphics.setColor(Color.GREEN);
 			if (falando instanceof Player)
 				prGraphics.setColor(Color.WHITE);
-			prGraphics.drawString(falas[fala], falando.getX() - Camera.x,
-					falando.getY() - SimpleMapLoader.TileSize - Camera.y);
+			int stringWidth = prGraphics.getFontMetrics().stringWidth(falas[fala]);
+			prGraphics.drawString(falas[fala],
+					falando.getX() + SimpleMapLoader.TileSize / 2 - Camera.x - stringWidth / 2,
+					falando.getY() - Camera.y);
 		}
 	}
 
