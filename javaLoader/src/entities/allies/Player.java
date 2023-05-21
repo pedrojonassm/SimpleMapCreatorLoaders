@@ -57,7 +57,7 @@ public class Player extends Entity implements tickRender {
 				if ("Monika".contentEquals(sqm_alvo.getPropriedade("Solid").toString())
 						&& !SimpleMapLoader.monika.isSleep()) {
 					aCaminho.clear();
-					sqm_alvo = null;
+					sqm_alvo = World.pegar_chao(x, y, z);
 					horizontal = vertical = 0;
 					SimpleMapLoader.monika.saltar();
 					ArrayList<Tile> lCoTile = Astar.findPath(

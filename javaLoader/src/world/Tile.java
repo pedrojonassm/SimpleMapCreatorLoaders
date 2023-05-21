@@ -93,9 +93,11 @@ public class Tile implements tickRender {
 				if ("Sebastiao".contentEquals(aPropriedades.get("NPC").toString())) {
 					SimpleMapLoader.sebastiao = new Sebastiao(this, aPropriedades.get("NPC").toString());
 					SimpleMapLoader.entities.add(SimpleMapLoader.sebastiao);
+					addPropriedade("contemEntidade", true);
 				} else if ("Monika".contentEquals(aPropriedades.get("NPC").toString())) {
 					SimpleMapLoader.monika = new Monika(this, aPropriedades.get("NPC").toString());
 					SimpleMapLoader.entities.add(SimpleMapLoader.monika);
+					addPropriedade("contemEntidade", true);
 				}
 			}
 
@@ -206,18 +208,24 @@ public class Tile implements tickRender {
 	}
 
 	public boolean Solid() {
-		if (aPropriedades == null || getPropriedade("Solid") == null)
+		if (aPropriedades == null || (getPropriedade("Solid") == null && getPropriedade("contemEntidade") == null))
 			return false;
 		try {
-			if (getPropriedade("Solid").toString().startsWith("ConjuntoNot=")) {
-				if (getPosicao_Conjunto() != Integer.parseInt(getPropriedade("Solid").toString().split("=")[1]))
+			if (getPropriedade("Solid") != null) {
+				if (getPropriedade("Solid").toString().startsWith("ConjuntoNot=")) {
+					if (getPosicao_Conjunto() != Integer.parseInt(getPropriedade("Solid").toString().split("=")[1]))
+						return true;
+				} else if (getPropriedade("Solid").toString().startsWith("Conjunto=")) {
+					if (getPosicao_Conjunto() == Integer.parseInt(getPropriedade("Solid").toString().split("=")[1]))
+						return true;
+				} else if (Boolean.valueOf(getPropriedade("Solid").toString())
+						|| Integer.parseInt(getPropriedade("Solid").toString()) == 1)
 					return true;
-			} else if (getPropriedade("Solid").toString().startsWith("Conjunto=")) {
-				if (getPosicao_Conjunto() == Integer.parseInt(getPropriedade("Solid").toString().split("=")[1]))
+			}
+			if (getPropriedade("contemEntidade") != null) {
+				if (Boolean.valueOf(getPropriedade("contemEntidade").toString()))
 					return true;
-			} else if (Boolean.valueOf(getPropriedade("Solid").toString())
-					|| Integer.parseInt(getPropriedade("Solid").toString()) == 1)
-				return true;
+			}
 
 		} catch (Exception e) {
 		}
@@ -225,7 +233,7 @@ public class Tile implements tickRender {
 	}
 
 	public boolean playerSolid() {
-		if (aPropriedades == null || getPropriedade("Solid") == null)
+		if (aPropriedades == null || (getPropriedade("Solid") == null && getPropriedade("contemEntidade") == null))
 			return false;
 		if (Solid())
 			return true;

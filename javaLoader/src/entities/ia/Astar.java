@@ -10,7 +10,6 @@ import world.Tile;
 import world.World;
 
 public class Astar {
-	public static double lastTime = System.currentTimeMillis();
 	private static Comparator<Node> nodeSorter = new Comparator<Node>() {
 
 		@Override
@@ -24,20 +23,20 @@ public class Astar {
 
 	};
 
-	public static boolean clear() {
-		if (System.currentTimeMillis() - lastTime >= 1000) {
-			return true;
-		}
-		return false;
-	}
-
 	public static ArrayList<Tile> findPath(Tile start, Tile end) {
 		return findPath(start, end, false);
 	}
 
 	public static ArrayList<Tile> findPath(Tile start, Tile end, boolean isPlayer) {
+		if (!isPlayer)
+			end.removePropriedade("contemEntidade");
+		if ((!isPlayer && end.Solid()) || (isPlayer && end.playerSolid()))
+			return new ArrayList<>();
+
 		List<Node> lCoNodes = findPath(new Vector2i(start.getX(), start.getY(), start.getZ()),
 				new Vector2i(end.getX(), end.getY(), end.getZ()), isPlayer);
+		if (!isPlayer)
+			end.addPropriedade("contemEntidade", true);
 		if (lCoNodes == null || lCoNodes.size() == 0)
 			return new ArrayList<>();
 		else {
@@ -54,7 +53,6 @@ public class Astar {
 	}
 
 	public static List<Node> findPath(Vector2i start, Vector2i end, boolean isPlayer) {
-		lastTime = System.currentTimeMillis();
 		List<Node> openList = new ArrayList<Node>();
 		List<Node> closedList = new ArrayList<Node>();
 
@@ -112,13 +110,13 @@ public class Astar {
 
 						node = new Node(a, current, gCost);
 
-						if (vecInList(closedList, a) && gCost >= current.gCost + current.fCost) {
+						if (vecInList(closedList, a) && gCost >= current.gCost) {
 							break;
 						}
 
 						if (!vecInList(openList, a)) {
 							openList.add(node);
-						} else if (gCost < current.gCost) {
+						} else if (gCost < current.gCost + current.fCost) {
 							openList.remove(current);
 							openList.add(node);
 						}

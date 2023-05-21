@@ -62,6 +62,8 @@ public class Entity implements tickRender {
 			if (aCaminho.size() > 0)
 				aCaminho.remove(0);
 
+			sqm_alvo.addPropriedade("contemEntidade", true);
+
 			sqm_alvo = null;
 		} else if (sqm_alvo == null) {
 			if (aCaminho.size() > 0) {
@@ -109,6 +111,7 @@ public class Entity implements tickRender {
 					minSpriteAnimation = maxSpriteAnimation;
 				}
 			}
+
 			changeAnimation();
 			if ((horizontal != 0 || vertical != 0) && !aBloqueadoMovimentacao) {
 				boolean lInverteuVelocidade = false;
@@ -133,6 +136,11 @@ public class Entity implements tickRender {
 					horizontal *= -1;
 					vertical *= -1;
 				}
+			}
+			if (sqm_alvo != null) {
+				Tile lTile = World.pegar_chao(x, y, z);
+				if (lTile != null)
+					lTile.removePropriedade("contemEntidade");
 			}
 		} else {
 			if (spriteADesenhar >= minSpriteAnimation && spriteADesenhar <= maxSpriteAnimation) {
