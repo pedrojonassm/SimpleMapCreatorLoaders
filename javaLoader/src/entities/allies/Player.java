@@ -75,8 +75,7 @@ public class Player extends Entity implements tickRender {
 			} else if (sqm_alvo.getaPropriedades().containsKey("evento")) {
 				if ("TrancarPorta".contentEquals(sqm_alvo.getPropriedade("evento").toString())) {
 					sqm_alvo.getaPropriedades().remove("evento", "TrancarPorta");
-					Tile lTile = World.pegar_chao(sqm_alvo.getX(), sqm_alvo.getY() + SimpleMapLoader.TileSize,
-							sqm_alvo.getZ());
+					Tile lTile = World.pegar_chao(2023);
 					lTile.setPosicao_Conjunto(1);
 				} else if ("DestrancarPorta".contentEquals(sqm_alvo.getPropriedade("evento").toString())) {
 					sqm_alvo.setPosicao_Conjunto(1);
