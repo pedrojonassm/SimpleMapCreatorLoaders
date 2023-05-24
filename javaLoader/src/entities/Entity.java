@@ -111,10 +111,11 @@ public class Entity implements tickRender {
 						y + SimpleMapLoader.TileSize * vertical, z));
 
 				if (sqm_alvo != null) {
-					if ((this instanceof Player) ? sqm_alvo.playerSolid() : sqm_alvo.Solid())
+					if ((this instanceof Player) ? sqm_alvo.playerSolid() : sqm_alvo.Solid()) {
 						sqm_alvo = null;
-
-					else if (Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed * 3
+						if (aCaminho.size() > 0)
+							aCaminho.clear();
+					} else if (Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed * 3
 							+ Uteis.modulo(tile_speed) * 2)
 						aBloqueadoMovimentacao = true;
 				}
