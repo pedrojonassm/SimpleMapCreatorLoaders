@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import entities.allies.Player;
 import main.SimpleMapLoader;
 import main.Uteis;
 import main.interfaces.tickRender;
@@ -110,7 +111,7 @@ public class Entity implements tickRender {
 						y + SimpleMapLoader.TileSize * vertical, z));
 
 				if (sqm_alvo != null) {
-					if (sqm_alvo.Solid())
+					if ((this instanceof Player) ? sqm_alvo.playerSolid() : sqm_alvo.Solid())
 						sqm_alvo = null;
 
 					else if (Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed * 3
