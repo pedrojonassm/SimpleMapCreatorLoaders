@@ -104,8 +104,8 @@ public class World {
 		int xstart = Camera.x >> log_ts;
 		int ystart = Camera.y >> log_ts;
 
-		int xfinal = xstart + (SimpleMapLoader.windowWidth >> log_ts) + 1;
-		int yfinal = ystart + (SimpleMapLoader.windowHEIGHT >> log_ts) + 1;
+		int xfinal = xstart + (SimpleMapLoader.windowWidth >> log_ts) + 2;
+		int yfinal = ystart + (SimpleMapLoader.windowHEIGHT >> log_ts) + 2;
 
 		if ((xstart -= (SimpleMapLoader.player.getZ() + 1)) < 0)
 			xstart = 0;
@@ -129,8 +129,8 @@ public class World {
 		int xstart = Camera.x >> log_ts;
 		int ystart = Camera.y >> log_ts;
 
-		int xfinal = xstart + (SimpleMapLoader.windowWidth >> log_ts) + 1;
-		int yfinal = ystart + (SimpleMapLoader.windowHEIGHT >> log_ts) + 1;
+		int xfinal = xstart + (SimpleMapLoader.windowWidth >> log_ts) + 2;
+		int yfinal = ystart + (SimpleMapLoader.windowHEIGHT >> log_ts) + 2;
 
 		if ((xstart -= (SimpleMapLoader.player.getZ() + 1)) < 0)
 			xstart = 0;
