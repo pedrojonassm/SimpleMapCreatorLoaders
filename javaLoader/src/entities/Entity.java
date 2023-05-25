@@ -69,11 +69,15 @@ public class Entity implements tickRender {
 					horizontal = 1;
 				else if (sqm_alvo.getX() < getX())
 					horizontal = -1;
+				else
+					horizontal = 0;
 
 				if (sqm_alvo.getY() > getY())
 					vertical = 1;
 				else if (sqm_alvo.getY() < getY())
 					vertical = -1;
+				else
+					vertical = 0;
 
 			} else {
 				if (SimpleMapLoader.podeNovaMovimentacao) {
