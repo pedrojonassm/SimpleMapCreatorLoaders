@@ -2,6 +2,7 @@ package entities;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,6 +20,9 @@ public class Entity implements tickRender {
 
 	protected int horizontal, vertical, speed;
 
+	protected BufferedImage[] sprites;
+	protected int spriteADesenhar, animationTime, maxAnimationTime, minSpriteAnimation, maxSpriteAnimation;
+
 	protected boolean forceRenderSize;
 
 	protected Tile sqm_alvo = null;
@@ -35,6 +39,8 @@ public class Entity implements tickRender {
 		horizontal = vertical = 0;
 		forceRenderSize = false;
 		aCaminho = new ArrayList<>();
+		spriteADesenhar = animationTime = minSpriteAnimation = maxSpriteAnimation = 0;
+		maxAnimationTime = 5;
 	}
 
 	@Override
@@ -43,16 +49,17 @@ public class Entity implements tickRender {
 				&& Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= Uteis.modulo(speed + tile_speed)) {
 			x = sqm_alvo.getX();
 			y = sqm_alvo.getY();
-			int k = sqm_alvo.ModificadorVelocidade();
 			horizontal = vertical = 0;
-			if (k > 0)
-				tile_speed = k;
-			else
-				tile_speed = k;
+			tile_speed = sqm_alvo.ModificadorVelocidade();
 			if (tile_speed == speed)
 				tile_speed--;
 			if (aCaminho.size() > 0)
 				aCaminho.remove(0);
+
+			minSpriteAnimation = (minSpriteAnimation + maxSpriteAnimation) / 2;
+			maxSpriteAnimation = minSpriteAnimation;
+
+			sqm_alvo.addPropriedade("contemEntidade", true);
 
 			sqm_alvo = null;
 		} else if (sqm_alvo == null) {
@@ -110,8 +117,13 @@ public class Entity implements tickRender {
 						y + SimpleMapLoader.TileSize * vertical, z));
 
 				if (sqm_alvo != null) {
-					if (sqm_alvo.Solid())
+					if (sqm_alvo.Solid()) {
+						if (aCaminho.size() > 0)
+							aCaminho.clear();
 						sqm_alvo = null;
+						minSpriteAnimation = (minSpriteAnimation + maxSpriteAnimation) / 2;
+						maxSpriteAnimation = minSpriteAnimation;
+					}
 
 					else if (Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed * 3
 							+ Uteis.modulo(tile_speed) * 2)
@@ -121,11 +133,23 @@ public class Entity implements tickRender {
 					horizontal *= -1;
 					vertical *= -1;
 				}
+				if (sqm_alvo != null) {
+					Tile lTile = World.pegar_chao(x, y, z);
+					if (lTile != null)
+						lTile.removePropriedade("contemEntidade");
+				}
 			}
 		} else {
 			x += (speed + tile_speed) * horizontal;
 			y += (speed + tile_speed) * vertical;
 		}
+
+		if (sprites != null)
+			if (++animationTime >= maxAnimationTime) {
+				if (spriteADesenhar < minSpriteAnimation || ++spriteADesenhar > maxSpriteAnimation)
+					spriteADesenhar = minSpriteAnimation;
+				animationTime = 0;
+			}
 
 		colidindo_com_escada();
 	}
@@ -135,6 +159,20 @@ public class Entity implements tickRender {
 	}
 
 	public void changeAnimation() {
+		if (vertical == 1) {
+			minSpriteAnimation = 6;
+			maxSpriteAnimation = 8;
+		} else if (vertical == -1) {
+			minSpriteAnimation = 0;
+			maxSpriteAnimation = 2;
+		}
+		if (horizontal == 1) {
+			minSpriteAnimation = 3;
+			maxSpriteAnimation = 5;
+		} else if (horizontal == -1) {
+			minSpriteAnimation = 9;
+			maxSpriteAnimation = 11;
+		}
 	}
 
 	public void setaCaminho(ArrayList<Tile> prCaminho) {
@@ -188,8 +226,17 @@ public class Entity implements tickRender {
 		Tile lTileAcima = World.pegar_chao(x, y, z + 1);
 		if (z == SimpleMapLoader.player.getZ()
 				&& (lTileAcima == null || lTileAcima.getZ() >= World.maxRenderingZ || !lTileAcima.tem_sprites())) {
-			prGraphics.setColor(Color.WHITE);
-			prGraphics.fillRect(x - Camera.x, y - Camera.y, SimpleMapLoader.TileSize, SimpleMapLoader.TileSize);
+			if (sprites == null || spriteADesenhar >= sprites.length) {
+				prGraphics.setColor(Color.WHITE);
+				prGraphics.fillRect(x - Camera.x, y - Camera.y, SimpleMapLoader.TileSize, SimpleMapLoader.TileSize);
+			} else {
+				prGraphics.setColor(Color.WHITE);
+				if (forceRenderSize)
+					prGraphics.drawImage(sprites[spriteADesenhar], x - Camera.x, y - Camera.y, SimpleMapLoader.TileSize,
+							SimpleMapLoader.TileSize, null);
+				else
+					prGraphics.drawImage(sprites[spriteADesenhar], x - Camera.x, y - Camera.y, null);
+			}
 
 		}
 	}

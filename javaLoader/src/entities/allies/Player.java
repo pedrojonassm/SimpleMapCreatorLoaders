@@ -2,9 +2,15 @@ package entities.allies;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.File;
+import java.util.ArrayList;
 
 import entities.Entity;
+import entities.ia.Astar;
 import files.SalvarCarregar;
+import graficos.Spritesheet;
+import graficos.Talks;
+import graficos.Ui;
 import main.SimpleMapLoader;
 import main.interfaces.tickRender;
 import world.Camera;
@@ -13,12 +19,72 @@ import world.World;
 
 public class Player extends Entity implements tickRender {
 
+	boolean contemChave;
+
 	public Player(int x, int y, int z) {
 		super(x, y, z);
+
+		if (SalvarCarregar.aArquivoPersonagens != null && SalvarCarregar.aArquivoPersonagens.exists()) {
+			File lImagem = new File(SalvarCarregar.aArquivoPersonagens, "player.png");
+			if (lImagem.exists()) {
+				Spritesheet lSpritesheet = new Spritesheet(lImagem, 12, 32, 36, "Player");
+				sprites = lSpritesheet.get_x_sprites(lSpritesheet.getTotalSprites());
+			}
+			forceRenderSize = true;
+			minSpriteAnimation = maxSpriteAnimation = 1;
+			spriteADesenhar = 1;
+			contemChave = false;
+		}
+	}
+
+	public boolean isContemChave() {
+		return contemChave;
+	}
+
+	public void setContemChave(boolean contemChave) {
+		this.contemChave = contemChave;
 	}
 
 	public void tick() {
-
+		if (sqm_alvo != null && sqm_alvo.getaPropriedades() != null) {
+			if (sqm_alvo.getaPropriedades().containsKey("Solid")) {
+				if ("Monika".contentEquals(sqm_alvo.getPropriedade("Solid").toString())
+						&& !SimpleMapLoader.monika.isSleep()) {
+					// Monika não deixa subir a escada
+					aCaminho.clear();
+					sqm_alvo = World.pegar_chao(x, y, z);
+					horizontal = vertical = 0;
+					ArrayList<Tile> lCoTile = Astar.findPath(
+							World.pegar_chao(SimpleMapLoader.monika.getX(), SimpleMapLoader.monika.getY(),
+									SimpleMapLoader.monika.getZ()),
+							World.pegar_chao(SimpleMapLoader.player.getX(), SimpleMapLoader.player.getY(),
+									SimpleMapLoader.player.getZ()));
+					SimpleMapLoader.monika.setaCaminho(lCoTile);
+					SimpleMapLoader.monika.setaFala(Talks.nameTentarSubirEscada);
+					SimpleMapLoader.podeNovaMovimentacao = false;
+				}
+			} else if (sqm_alvo.getaPropriedades().containsKey("evento")) {
+				if ("TrancarPorta".contentEquals(sqm_alvo.getPropriedade("evento").toString())) {
+					if (!contemChave) {
+						Tile lTile = World.pegar_chao(2023);
+						lTile.setPosicao_Conjunto(1);
+					}
+				} else if ("DestrancarPorta".contentEquals(sqm_alvo.getPropriedade("evento").toString())) {
+					sqm_alvo.setPosicao_Conjunto(1);
+					if (sqm_alvo.getPosicao_Conjunto() >= sqm_alvo.getCoConjuntoSprites().size())
+						sqm_alvo.setPosicao_Conjunto(0);
+					contemChave = true;
+				} else if ("Fujir".contentEquals(sqm_alvo.getPropriedade("evento").toString())) {
+					if (SimpleMapLoader.player.isContemChave()) {
+						sqm_alvo.getaPropriedades().remove("evento", "Fujir");
+						SimpleMapLoader.podeNovaMovimentacao = false;
+						Ui.aBallonTalk.setFalas(Talks.FinishGame);
+						Ui.aBallonTalk.next();
+						Ui.aBallonTalk.adicionarAcaoAposFalar(() -> SimpleMapLoader.podeNovaMovimentacao = true);
+					}
+				}
+			}
+		}
 		super.tick();
 		colidindoTransporteParaOutroMundo();
 		updateCamera();

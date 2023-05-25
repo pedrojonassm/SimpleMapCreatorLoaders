@@ -21,7 +21,9 @@ import java.util.Random;
 import javax.swing.JFrame;
 
 import entities.Entity;
+import entities.allies.Monika;
 import entities.allies.Player;
+import entities.allies.Sebastiao;
 import entities.ia.Astar;
 import files.SalvarCarregar;
 import graficos.Ui;
@@ -42,6 +44,8 @@ public class SimpleMapLoader extends Canvas
 
 	public static World world;
 
+	public static Sebastiao sebastiao;
+	public static Monika monika;
 	public static Player player;
 	public static ArrayList<Entity> entities;
 	public SalvarCarregar memoria;
@@ -332,7 +336,11 @@ public class SimpleMapLoader extends Canvas
 			else {
 				Tile lTile = World.tiles[aPos];
 				if (lTile != null) {
-					if (lTile.getaPropriedades() != null) {
+					if (lTile.getaPropriedades() != null && Uteis.distancia(lTile.getX() + SimpleMapLoader.TileSize / 2,
+							SimpleMapLoader.player.getX() + SimpleMapLoader.TileSize / 2,
+							lTile.getY() + SimpleMapLoader.TileSize / 2,
+							SimpleMapLoader.player.getY() + SimpleMapLoader.TileSize / 2) <= SimpleMapLoader.TileSize
+									* 1.5) {
 						lTile.dispararEventos();
 					}
 				}
@@ -375,12 +383,6 @@ public class SimpleMapLoader extends Canvas
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if (ui.trocar_pagina(e.getX(), e.getY(), (e.getWheelRotation() > 0) ? 1 : -1))
 			return;
-		else {
-			if (control) {
-				player.camada(e.getWheelRotation());
-				aPos = World.calcular_pos(e.getX() + Camera.x, e.getY() + Camera.y, player.getZ());
-			}
-		}
 	}
 
 }

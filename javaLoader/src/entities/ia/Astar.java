@@ -36,8 +36,19 @@ public class Astar {
 	}
 
 	public static ArrayList<Tile> findPath(Tile start, Tile end, boolean isPlayer) {
+		start.removePropriedade("contemEntidade");
+		boolean lContem = false;
+		if (!isPlayer && end.getaPropriedades() != null && end.getaPropriedades().containsKey("contemEntidade")) {
+			end.removePropriedade("contemEntidade");
+			lContem = true;
+		}
+		if (((!isPlayer && end.Solid()) || (isPlayer && end.playerSolid())))
+			return new ArrayList<>();
 		List<Node> lCoNodes = findPath(new Vector2i(start.getX(), start.getY(), start.getZ()),
 				new Vector2i(end.getX(), end.getY(), end.getZ()), isPlayer);
+
+		if (lContem)
+			end.addPropriedade("contemEntidade", true);
 		if (lCoNodes == null || lCoNodes.size() == 0)
 			return new ArrayList<>();
 		else {

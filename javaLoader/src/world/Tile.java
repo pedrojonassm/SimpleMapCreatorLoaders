@@ -5,11 +5,16 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import entities.Entity;
+import entities.allies.Monika;
+import entities.allies.NPC;
+import entities.allies.Sebastiao;
+import entities.ia.Astar;
 import graficos.ConjuntoSprites;
+import graficos.Talks;
 import graficos.telas.Sprite;
 import main.SimpleMapLoader;
 import main.interfaces.tickRender;
@@ -73,6 +78,27 @@ public class Tile implements tickRender {
 
 	@Override
 	public void tick() {
+		if (aPropriedades != null && aPropriedades.containsKey("NPC")) {
+			boolean lSummon = true;
+			for (Entity iEntity : SimpleMapLoader.entities) {
+				if (iEntity instanceof NPC && ((NPC) iEntity).obterPosOrigem() == aPos) {
+					lSummon = false;
+					break;
+				}
+			}
+			if (lSummon) {
+				if ("Sebastiao".contentEquals(aPropriedades.get("NPC").toString())) {
+					SimpleMapLoader.sebastiao = new Sebastiao(this);
+					SimpleMapLoader.entities.add(SimpleMapLoader.sebastiao);
+					addPropriedade("contemEntidade", true);
+				} else if ("Monika".contentEquals(aPropriedades.get("NPC").toString())) {
+					SimpleMapLoader.monika = new Monika(this);
+					SimpleMapLoader.entities.add(SimpleMapLoader.monika);
+					addPropriedade("contemEntidade", true);
+				}
+			}
+
+		}
 	}
 
 	@Override
@@ -179,18 +205,24 @@ public class Tile implements tickRender {
 	}
 
 	public boolean Solid() {
-		if (aPropriedades == null || getPropriedade("Solid") == null)
+		if (aPropriedades == null || (getPropriedade("Solid") == null && getPropriedade("contemEntidade") == null))
 			return false;
 		try {
-			if (getPropriedade("Solid").toString().startsWith("ConjuntoNot=")) {
-				if (getPosicao_Conjunto() != Integer.parseInt(getPropriedade("Solid").toString().split("=")[1]))
+			if (getPropriedade("Solid") != null) {
+				if (getPropriedade("Solid").toString().startsWith("ConjuntoNot=")) {
+					if (getPosicao_Conjunto() != Integer.parseInt(getPropriedade("Solid").toString().split("=")[1]))
+						return true;
+				} else if (getPropriedade("Solid").toString().startsWith("Conjunto=")) {
+					if (getPosicao_Conjunto() == Integer.parseInt(getPropriedade("Solid").toString().split("=")[1]))
+						return true;
+				} else if (Boolean.valueOf(getPropriedade("Solid").toString())
+						|| Integer.parseInt(getPropriedade("Solid").toString()) == 1)
 					return true;
-			} else if (getPropriedade("Solid").toString().startsWith("Conjunto=")) {
-				if (getPosicao_Conjunto() == Integer.parseInt(getPropriedade("Solid").toString().split("=")[1]))
+			}
+			if (getPropriedade("contemEntidade") != null) {
+				if (Boolean.valueOf(getPropriedade("contemEntidade").toString()))
 					return true;
-			} else if (Boolean.valueOf(getPropriedade("Solid").toString())
-					|| Integer.parseInt(getPropriedade("Solid").toString()) == 1)
-				return true;
+			}
 
 		} catch (Exception e) {
 		}
@@ -198,8 +230,11 @@ public class Tile implements tickRender {
 	}
 
 	public boolean playerSolid() {
-		if (aPropriedades == null || getPropriedade("Solid") == null)
+		if (aPropriedades == null || (getPropriedade("Solid") == null && getPropriedade("contemEntidade") == null))
 			return false;
+		if (getPropriedade("Solid") != null && "Monika".contentEquals(getPropriedade("Solid").toString())
+				&& !SimpleMapLoader.monika.isSleep())
+			return true;
 		if (Solid())
 			return true;
 		return false;
@@ -237,8 +272,89 @@ public class Tile implements tickRender {
 	}
 
 	public void dispararEventos() {
-		for (Entry<String, Object> iEntrySet : aPropriedades.entrySet()) {
-			System.out.println(iEntrySet.getKey() + " = " + iEntrySet.getValue());
+		if (aPropriedades != null) {
+			if (aPropriedades.containsKey("evento")) {
+				if ("CallMonika".contentEquals(aPropriedades.get("evento").toString())) {
+					// Colocada na Alavanca
+					if (!SimpleMapLoader.monika.isSleep()) {
+						ArrayList<Tile> lCoTile = Astar.findPath(
+								World.pegar_chao(SimpleMapLoader.monika.getX(), SimpleMapLoader.monika.getY(),
+										SimpleMapLoader.monika.getZ()),
+								World.pegar_chao(SimpleMapLoader.player.getX(), SimpleMapLoader.player.getY(),
+										SimpleMapLoader.player.getZ()));
+						SimpleMapLoader.monika.setaCaminho(lCoTile);
+						SimpleMapLoader.monika.setaFala(Talks.nameMexeuAlavanca);
+						SimpleMapLoader.podeNovaMovimentacao = false;
+					} else {
+						posicao_Conjunto = 1;
+						if (posicao_Conjunto >= CoConjuntoSprites.size())
+							posicao_Conjunto = 0;
+					}
+				} else if ("CallSebastiao".contentEquals(aPropriedades.get("evento").toString())) {
+					// Colocado na anemona
+					if (!SimpleMapLoader.sebastiao.isSleep()) {
+
+						ArrayList<Tile> lCoTile = Astar.findPath(
+								World.pegar_chao(SimpleMapLoader.sebastiao.getX(), SimpleMapLoader.sebastiao.getY(),
+										SimpleMapLoader.sebastiao.getZ()),
+								World.pegar_chao(SimpleMapLoader.player.getX(), SimpleMapLoader.player.getY(),
+										SimpleMapLoader.player.getZ()));
+						SimpleMapLoader.sebastiao.setaCaminho(lCoTile);
+
+						SimpleMapLoader.sebastiao.setaFala(Talks.nameMexeuAnemona);
+						SimpleMapLoader.podeNovaMovimentacao = false;
+					} else {
+						posicao_Conjunto = 1;
+						if (posicao_Conjunto >= CoConjuntoSprites.size())
+							posicao_Conjunto = 0;
+						if (!SimpleMapLoader.monika.isSleep()) {
+							ArrayList<Tile> lCoTile = Astar.findPath(World.pegar_chao(SimpleMapLoader.monika.getX(),
+									SimpleMapLoader.monika.getY(), SimpleMapLoader.monika.getZ()), this);
+							SimpleMapLoader.monika.setaCaminho(lCoTile);
+							SimpleMapLoader.monika.setaFala(Talks.nameMatouAnemona);
+							SimpleMapLoader.podeNovaMovimentacao = false;
+						}
+					}
+				} else if ("QuebrarPorco".contentEquals(aPropriedades.get("evento").toString())) {
+					// Colocado no porquinho
+					posicao_Conjunto = 1;
+					if (posicao_Conjunto >= CoConjuntoSprites.size())
+						posicao_Conjunto = 0;
+					if (!SimpleMapLoader.sebastiao.isSleep()) {
+						ArrayList<Tile> lCoTile = Astar.findPath(
+								World.pegar_chao(SimpleMapLoader.sebastiao.getX(), SimpleMapLoader.sebastiao.getY(),
+										SimpleMapLoader.sebastiao.getZ()),
+								World.pegar_chao(SimpleMapLoader.player.getX(), SimpleMapLoader.player.getY(),
+										SimpleMapLoader.player.getZ()));
+						SimpleMapLoader.sebastiao.setaCaminho(lCoTile);
+
+						SimpleMapLoader.sebastiao.setaFala(Talks.namePorcoQuebrou);
+
+						lCoTile = Astar.findPath(
+								World.pegar_chao(SimpleMapLoader.monika.getX(), SimpleMapLoader.monika.getY(),
+										SimpleMapLoader.monika.getZ()),
+								World.pegar_chao(SimpleMapLoader.player.getX(), SimpleMapLoader.player.getY(),
+										SimpleMapLoader.player.getZ()));
+						SimpleMapLoader.monika.setaCaminho(lCoTile);
+
+						SimpleMapLoader.podeNovaMovimentacao = false;
+					}
+				} else if ("DestrancarPorta".contentEquals(aPropriedades.get("evento").toString())) {
+					// Colocado na chave no segundo andar
+					posicao_Conjunto = 1;
+					if (posicao_Conjunto >= CoConjuntoSprites.size())
+						posicao_Conjunto = 0;
+					SimpleMapLoader.player.setContemChave(true);
+
+				} else if ("Porta".contentEquals(aPropriedades.get("evento").toString())) {
+					// Colocado na porta, para interagir com ela
+					if (SimpleMapLoader.player.isContemChave()) {
+						posicao_Conjunto++;
+						if (posicao_Conjunto >= CoConjuntoSprites.size())
+							posicao_Conjunto = 0;
+					}
+				}
+			}
 		}
 	}
 
