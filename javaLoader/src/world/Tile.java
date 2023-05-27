@@ -1,6 +1,7 @@
 package world;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,6 +100,46 @@ public class Tile implements tickRender {
 			}
 
 		}
+	}
+
+	public boolean checkMaxRendering() {
+		if (z > SimpleMapLoader.player.getZ()) {
+			int dx, dy, maxWidth = 0, maxHeight = 0;
+			if (posicao_Conjunto < CoConjuntoSprites.size() && CoConjuntoSprites.get(posicao_Conjunto) != null)
+				for (ArrayList<Sprite> imagens : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
+					if (imagens != null && imagens.size() > 0) {
+						Sprite sprite = imagens.get(World.tiles_index % imagens.size());
+
+						BufferedImage image = sprite.pegarImagem();
+
+						if (image.getWidth() > maxHeight) {
+							maxWidth = image.getWidth();
+						}
+						if (image.getHeight() > maxHeight) {
+							maxHeight = image.getHeight();
+						}
+
+					}
+				}
+
+			if (maxWidth > SimpleMapLoader.TileSize || maxHeight > SimpleMapLoader.TileSize) {
+				dx = x - Camera.x - SimpleMapLoader.TileSize * ((maxWidth / SimpleMapLoader.TileSize) - 1);
+				dy = y - Camera.y - SimpleMapLoader.TileSize * ((maxHeight / SimpleMapLoader.TileSize) - 1);
+			} else {
+				dx = x - Camera.x;
+				dy = y - Camera.y;
+			}
+			dx -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
+			dy -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
+
+			if (new Rectangle(dx, dy, maxWidth, maxHeight).intersects(
+					new Rectangle(SimpleMapLoader.player.getX() - Camera.x, SimpleMapLoader.player.getY() - Camera.y,
+							SimpleMapLoader.TileSize, SimpleMapLoader.TileSize)))
+				return true;
+
+		}
+		return false;
+
 	}
 
 	@Override
