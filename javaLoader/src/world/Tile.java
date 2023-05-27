@@ -330,6 +330,16 @@ public class Tile implements tickRender {
 						posicao_Conjunto = 1;
 						if (posicao_Conjunto >= CoConjuntoSprites.size())
 							posicao_Conjunto = 0;
+						Tile lTile;
+						int[] posicoes = { 1772, 1611, 1296, 1716 };
+						for (int i : posicoes) {
+							lTile = World.pegar_chao(i);
+							if (lTile != null) {
+								lTile.setPosicao_Conjunto(1);
+								if (lTile.getPosicao_Conjunto() >= lTile.getCoConjuntoSprites().size())
+									lTile.setPosicao_Conjunto(0);
+							}
+						}
 					}
 				} else if ("CallSebastiao".contentEquals(aPropriedades.get("evento").toString())) {
 					// Colocado na anemona
