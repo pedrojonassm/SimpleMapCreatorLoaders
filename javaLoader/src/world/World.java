@@ -137,17 +137,24 @@ public class World {
 		if ((ystart -= (SimpleMapLoader.player.getZ() + 1)) < 0)
 			ystart = 0;
 
-		Tile t;
+		Tile lTile;
 		maxRenderingZ = HIGH;
-		for (int i = 1; i < HIGH - SimpleMapLoader.player.getZ(); i++) {
-			t = pegar_chao(SimpleMapLoader.player.getX() + SimpleMapLoader.TileSize,
-					SimpleMapLoader.player.getY() + SimpleMapLoader.TileSize, SimpleMapLoader.player.getZ() + 1);
 
-			if (t != null && t.tem_sprites()) {
-				maxRenderingZ = t.getZ();
-				break;
-			}
-		}
+		boolean lBreak = false;
+
+		for (int xx = SimpleMapLoader.player.getX() >> log_ts + 1; xx <= xfinal && !lBreak; xx++)
+			for (int yy = SimpleMapLoader.player.getY() >> log_ts + 1; yy <= yfinal && !lBreak; yy++)
+				for (int zz = 1; zz < HIGH - SimpleMapLoader.player.getZ() - 1 && !lBreak; zz++) {
+					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
+						continue;
+					}
+					lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
+
+					if (lTile != null && lTile.checkMaxRendering()) {
+						maxRenderingZ = lTile.getZ();
+						lBreak = true;
+					}
+				}
 
 		for (int xx = xstart; xx <= xfinal; xx++)
 			for (int yy = ystart; yy <= yfinal; yy++)
@@ -156,7 +163,7 @@ public class World {
 						continue;
 					}
 
-					Tile lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
+					lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
 					if (lTile != null)
 						lTile.render(g);
 				}
