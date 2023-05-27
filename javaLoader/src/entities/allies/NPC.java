@@ -66,7 +66,7 @@ public class NPC extends Entity {
 				// Caso não tenhha pra onde ir, caso contrário ele se moverá infinitamente
 				left = right = up = down = false;
 			}
-		} else {
+		} else if (aSleep && Uteis.distancia(x, aOrigem.getX(), y, aOrigem.getY()) <= SimpleMapLoader.TileSize) {
 			sqm_alvo = null;
 			aCaminho.clear();
 		}
