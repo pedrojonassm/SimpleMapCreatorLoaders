@@ -66,6 +66,9 @@ public class NPC extends Entity {
 				// Caso não tenhha pra onde ir, caso contrário ele se moverá infinitamente
 				left = right = up = down = false;
 			}
+		} else {
+			sqm_alvo = null;
+			aCaminho.clear();
 		}
 	}
 
