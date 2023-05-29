@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import entities.allies.Player;
 import main.SimpleMapLoader;
 import main.Uteis;
 import main.interfaces.tickRender;
@@ -62,6 +63,8 @@ public class Entity implements tickRender {
 			sqm_alvo.addPropriedade("contemEntidade", true);
 
 			sqm_alvo = null;
+			if (this instanceof Player)
+				SimpleMapLoader.player.aPosAtual = SimpleMapLoader.player.aPosAlvo;
 		} else if (sqm_alvo == null) {
 			if (aCaminho.size() > 0) {
 				sqm_alvo = aCaminho.get(0);
@@ -141,6 +144,8 @@ public class Entity implements tickRender {
 					Tile lTile = World.pegar_chao(x, y, z);
 					if (lTile != null)
 						lTile.removePropriedade("contemEntidade");
+					if (this instanceof Player)
+						SimpleMapLoader.player.aPosAlvo = sqm_alvo.getaPos();
 				}
 			}
 		} else {
@@ -222,6 +227,8 @@ public class Entity implements tickRender {
 			z = lTile.getZ();
 
 			sqm_alvo = lTile;
+			if (this instanceof Player)
+				SimpleMapLoader.player.aPosAlvo = sqm_alvo.getaPos();
 		}
 	}
 

@@ -21,9 +21,12 @@ public class Player extends Entity implements tickRender {
 
 	boolean contemChave;
 
+	public int aPosAtual, aPosAlvo;
+
 	public Player(int x, int y, int z) {
 		super(x, y, z);
 
+		aPosAtual = aPosAlvo = 0;
 		if (SalvarCarregar.aArquivoPersonagens != null && SalvarCarregar.aArquivoPersonagens.exists()) {
 			File lImagem = new File(SalvarCarregar.aArquivoPersonagens, "player.png");
 			if (lImagem.exists()) {
@@ -53,6 +56,7 @@ public class Player extends Entity implements tickRender {
 					// Monika não deixa subir a escada
 					aCaminho.clear();
 					sqm_alvo = World.pegar_chao(x, y, z);
+					SimpleMapLoader.player.aPosAlvo = sqm_alvo.getaPos();
 					horizontal = vertical = 0;
 					ArrayList<Tile> lCoTile = Astar.findPath(
 							World.pegar_chao(SimpleMapLoader.monika.getX(), SimpleMapLoader.monika.getY(),
