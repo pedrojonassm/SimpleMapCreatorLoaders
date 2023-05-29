@@ -55,6 +55,9 @@ public class Entity implements tickRender {
 			if (aCaminho.size() > 0)
 				aCaminho.remove(0);
 
+			if (this instanceof Player)
+				SimpleMapLoader.player.aPosAtual = SimpleMapLoader.player.aPosAlvo;
+
 			sqm_alvo = null;
 		} else if (sqm_alvo == null) {
 			if (aCaminho.size() > 0) {
@@ -119,6 +122,10 @@ public class Entity implements tickRender {
 							+ Uteis.modulo(tile_speed) * 2)
 						aBloqueadoMovimentacao = true;
 				}
+
+				if (sqm_alvo != null && this instanceof Player)
+					SimpleMapLoader.player.aPosAlvo = sqm_alvo.getaPos();
+
 				if (lInverteuVelocidade) {
 					horizontal *= -1;
 					vertical *= -1;
@@ -182,6 +189,8 @@ public class Entity implements tickRender {
 			z = lTile.getZ();
 
 			sqm_alvo = lTile;
+			if (this instanceof Player)
+				SimpleMapLoader.player.aPosAlvo = sqm_alvo.getaPos();
 		}
 	}
 

@@ -29,7 +29,7 @@ public class SalvarCarregar {
 	private ArrayList<String> mundosDisponiveis;
 
 	public static final String nameFileWorld = "world.world", nameFileWorldconfig = "world.config",
-			startWorldName = "Castelo", nameFolderImagens = "imagens", nameFileImageData = "data.config",
+			startWorldName = "teste", nameFolderImagens = "imagens", nameFileImageData = "data.config",
 			nameImagem = "image.png";
 
 	public SalvarCarregar() {

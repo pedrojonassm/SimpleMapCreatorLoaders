@@ -182,7 +182,7 @@ public class SimpleMapLoader extends Canvas
 			for (Entity iEntity : entities)
 				iEntity.render(g);
 
-			if (World.tiles[player.aPosAtual] == null)
+			if (player.aPosAtual < 0 || World.tiles[player.aPosAtual] == null)
 				player.render(g);
 			ui.render(g);
 		} else {

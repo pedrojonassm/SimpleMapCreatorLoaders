@@ -18,7 +18,7 @@ public class Player extends Entity implements tickRender {
 	public Player(int x, int y, int z) {
 		super(x, y, z);
 
-		aPosAtual = aPosAlvo = 0;
+		aPosAtual = aPosAlvo = -1;
 	}
 
 	public void tick() {
