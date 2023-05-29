@@ -3,6 +3,7 @@ package world;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import files.SalvarCarregar;
@@ -22,10 +23,13 @@ public class World {
 	public static boolean ready, ok;
 	public static File aArquivo;
 
+	private static ArrayList<Runnable> renderizarDepoisLinhaXX;
+
 	public World(File prFile) {
 		ready = false;
 		tiles_index = tiles_animation_time = 0;
 		max_tiles_animation_time = 15;
+		renderizarDepoisLinhaXX = new ArrayList<>();
 		try {
 			if (prFile == null) {
 				prFile = new File(SalvarCarregar.aArquivoMundos, SalvarCarregar.startWorldName);
@@ -156,8 +160,8 @@ public class World {
 					}
 				}
 
-		for (int xx = xstart; xx <= xfinal; xx++)
-			for (int yy = ystart; yy <= yfinal; yy++)
+		for (int yy = ystart; yy <= yfinal; yy++) {
+			for (int xx = xstart; xx <= xfinal; xx++)
 				for (int zz = 0; zz < maxRenderingZ; zz++) {
 					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
@@ -171,6 +175,15 @@ public class World {
 							SimpleMapLoader.player.render(g);
 					}
 				}
+			while (renderizarDepoisLinhaXX.size() > 0) {
+				renderizarDepoisLinhaXX.get(0).run();
+				renderizarDepoisLinhaXX.remove(0);
+			}
+		}
+	}
+
+	public static void renderizarImagemDepois(Graphics prGraphics, BufferedImage image, int prPosX, int prPosY) {
+		renderizarDepoisLinhaXX.add(() -> prGraphics.drawImage(image, prPosX, prPosY, null));
 	}
 
 	public static void novo_mundo(File file) {
