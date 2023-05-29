@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import graficos.ConjuntoSprites;
+import graficos.Ui;
 import graficos.telas.Sprite;
 import main.SimpleMapLoader;
 import main.interfaces.tickRender;
@@ -120,7 +121,8 @@ public class Tile implements tickRender {
 	public void render(Graphics g) {
 
 		if (posicao_Conjunto < CoConjuntoSprites.size() && CoConjuntoSprites.get(posicao_Conjunto) != null)
-			for (ArrayList<Sprite> imagens : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
+			for (int iLayer = 0; iLayer < CoConjuntoSprites.get(posicao_Conjunto).getSprites().size(); iLayer++) {
+				ArrayList<Sprite> imagens = CoConjuntoSprites.get(posicao_Conjunto).getSprites().get(iLayer);
 				if (imagens != null && imagens.size() > 0) {
 					Sprite sprite = imagens.get(World.tiles_index % imagens.size());
 					int dx, dy;
@@ -134,7 +136,11 @@ public class Tile implements tickRender {
 					}
 					dx -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
 					dy -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
-					g.drawImage(image, dx, dy, null);
+					if (getPropriedade("renderLayerPosWorldRender") != null
+							&& getPropriedade("renderLayerPosWorldRender").toString().contentEquals(iLayer + ""))
+						Ui.renderizarImagemDepois(g, image, dx, dy);
+					else
+						g.drawImage(image, dx, dy, null);
 				}
 			}
 
