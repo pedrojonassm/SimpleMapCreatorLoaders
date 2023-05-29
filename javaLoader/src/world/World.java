@@ -164,8 +164,12 @@ public class World {
 					}
 
 					lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
-					if (lTile != null)
+					if (lTile != null) {
 						lTile.render(g);
+						if (lTile.getaPos() == SimpleMapLoader.player.aPosAtual
+								|| lTile.getaPos() == SimpleMapLoader.player.aPosAlvo)
+							SimpleMapLoader.player.render(g);
+					}
 				}
 	}
 

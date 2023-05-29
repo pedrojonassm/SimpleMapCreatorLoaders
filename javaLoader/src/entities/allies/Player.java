@@ -13,8 +13,12 @@ import world.World;
 
 public class Player extends Entity implements tickRender {
 
+	public int aPosAtual, aPosAlvo;
+
 	public Player(int x, int y, int z) {
 		super(x, y, z);
+
+		aPosAtual = aPosAlvo = 0;
 	}
 
 	public void tick() {
