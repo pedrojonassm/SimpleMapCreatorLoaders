@@ -136,18 +136,21 @@ public class Tile implements tickRender {
 					}
 					dx -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
 					dy -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
-					if (getPropriedade("renderLayerPosWorldRender") != null
-							&& getPropriedade("renderLayerPosWorldRender").toString().contentEquals(iLayer + ""))
-						Ui.renderizarImagemDepois(g, image, dx, dy);
-					else if (getPropriedade("renderLayerPosWorldRenderHorizontal") != null
-							&& getPropriedade("renderLayerPosWorldRenderHorizontal").toString()
-									.contentEquals(iLayer + ""))
-						World.renderizarImagemDepoisXX(g, image, dx, dy);
-					else if (getPropriedade("renderLayerPosWorldRenderVertical") != null
-							&& getPropriedade("renderLayerPosWorldRenderVertical").toString()
-									.contentEquals(iLayer + ""))
-						World.renderizarImagemDepoisYY(g, image, dx, dy);
-					else
+					if (z == SimpleMapLoader.player.getZ()) {
+						if (getPropriedade("renderLayerPosWorldRender") != null
+								&& getPropriedade("renderLayerPosWorldRender").toString().contentEquals(iLayer + ""))
+							Ui.renderizarImagemDepois(g, image, dx, dy);
+						else if (getPropriedade("renderLayerPosWorldRenderHorizontal") != null
+								&& getPropriedade("renderLayerPosWorldRenderHorizontal").toString()
+										.contentEquals(iLayer + ""))
+							World.renderizarImagemDepoisXX(g, image, dx, dy);
+						else if (getPropriedade("renderLayerPosWorldRenderVertical") != null
+								&& getPropriedade("renderLayerPosWorldRenderVertical").toString()
+										.contentEquals(iLayer + ""))
+							World.renderizarImagemDepoisYY(g, image, dx, dy);
+						else
+							g.drawImage(image, dx, dy, null);
+					} else
 						g.drawImage(image, dx, dy, null);
 				}
 			}
