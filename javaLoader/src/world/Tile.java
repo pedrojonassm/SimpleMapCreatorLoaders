@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import graficos.ConjuntoSprites;
+import graficos.Ui;
 import graficos.telas.Sprite;
 import main.SimpleMapLoader;
 import main.interfaces.tickRender;
@@ -137,7 +138,15 @@ public class Tile implements tickRender {
 					dy -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
 					if (getPropriedade("renderLayerPosWorldRender") != null
 							&& getPropriedade("renderLayerPosWorldRender").toString().contentEquals(iLayer + ""))
-						World.renderizarImagemDepois(g, image, dx, dy);
+						Ui.renderizarImagemDepois(g, image, dx, dy);
+					else if (getPropriedade("renderLayerPosWorldRenderHorizontal") != null
+							&& getPropriedade("renderLayerPosWorldRenderHorizontal").toString()
+									.contentEquals(iLayer + ""))
+						World.renderizarImagemDepoisXX(g, image, dx, dy);
+					else if (getPropriedade("renderLayerPosWorldRenderVertical") != null
+							&& getPropriedade("renderLayerPosWorldRenderVertical").toString()
+									.contentEquals(iLayer + ""))
+						World.renderizarImagemDepoisYY(g, image, dx, dy);
 					else
 						g.drawImage(image, dx, dy, null);
 				}

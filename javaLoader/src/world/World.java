@@ -23,13 +23,14 @@ public class World {
 	public static boolean ready, ok;
 	public static File aArquivo;
 
-	private static ArrayList<Runnable> renderizarDepoisLinhaXX;
+	private static ArrayList<Runnable> renderizarDepoisLinhaXX, renderizarDepoisLinhaYY;
 
 	public World(File prFile) {
 		ready = false;
 		tiles_index = tiles_animation_time = 0;
 		max_tiles_animation_time = 15;
 		renderizarDepoisLinhaXX = new ArrayList<>();
+		renderizarDepoisLinhaYY = new ArrayList<>();
 		try {
 			if (prFile == null) {
 				prFile = new File(SalvarCarregar.aArquivoMundos, SalvarCarregar.startWorldName);
@@ -180,10 +181,18 @@ public class World {
 				renderizarDepoisLinhaXX.remove(0);
 			}
 		}
+		while (renderizarDepoisLinhaYY.size() > 0) {
+			renderizarDepoisLinhaYY.get(0).run();
+			renderizarDepoisLinhaYY.remove(0);
+		}
 	}
 
-	public static void renderizarImagemDepois(Graphics prGraphics, BufferedImage image, int prPosX, int prPosY) {
+	public static void renderizarImagemDepoisXX(Graphics prGraphics, BufferedImage image, int prPosX, int prPosY) {
 		renderizarDepoisLinhaXX.add(() -> prGraphics.drawImage(image, prPosX, prPosY, null));
+	}
+
+	public static void renderizarImagemDepoisYY(Graphics prGraphics, BufferedImage image, int prPosX, int prPosY) {
+		renderizarDepoisLinhaYY.add(() -> prGraphics.drawImage(image, prPosX, prPosY, null));
 	}
 
 	public static void novo_mundo(File file) {
