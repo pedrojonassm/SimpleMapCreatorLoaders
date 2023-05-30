@@ -77,8 +77,8 @@ public class Tile implements tickRender {
 	public void tick() {
 	}
 
-	public boolean checkMaxRendering() {
-		if (z > SimpleMapLoader.player.getZ()) {
+	public boolean isTileEmCima(int prX, int prY, int prZ) {
+		if (z > prZ) {
 			int dx, dy, maxWidth = 0, maxHeight = 0;
 			if (posicao_Conjunto < CoConjuntoSprites.size() && CoConjuntoSprites.get(posicao_Conjunto) != null)
 				for (ArrayList<Sprite> imagens : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
@@ -98,23 +98,33 @@ public class Tile implements tickRender {
 				}
 
 			if (maxWidth > SimpleMapLoader.TileSize || maxHeight > SimpleMapLoader.TileSize) {
-				dx = x - Camera.x - SimpleMapLoader.TileSize * ((maxWidth / SimpleMapLoader.TileSize) - 1);
-				dy = y - Camera.y - SimpleMapLoader.TileSize * ((maxHeight / SimpleMapLoader.TileSize) - 1);
+				dx = x - SimpleMapLoader.TileSize * ((maxWidth / SimpleMapLoader.TileSize) - 1);
+				dy = y - SimpleMapLoader.TileSize * ((maxHeight / SimpleMapLoader.TileSize) - 1);
 			} else {
-				dx = x - Camera.x;
-				dy = y - Camera.y;
+				dx = x;
+				dy = y;
 			}
-			dx -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
-			dy -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
+			dx -= (z - prZ) * SimpleMapLoader.TileSize;
+			dy -= (z - prZ) * SimpleMapLoader.TileSize;
 
-			if (new Rectangle(dx, dy, maxWidth, maxHeight).intersects(
-					new Rectangle(SimpleMapLoader.player.getX() - Camera.x, SimpleMapLoader.player.getY() - Camera.y,
-							SimpleMapLoader.TileSize, SimpleMapLoader.TileSize)))
+			if (new Rectangle(dx, dy, maxWidth, maxHeight).intersects(new Rectangle(SimpleMapLoader.player.getX(),
+					SimpleMapLoader.player.getY(), SimpleMapLoader.TileSize, SimpleMapLoader.TileSize)))
 				return true;
 
 		}
 		return false;
 
+	}
+
+	private boolean temTileAcima() {
+		Tile lTile;
+		for (int zz = z + 1; zz < World.maxRenderingZ; zz++) {
+			lTile = World.pegar_chao(x + SimpleMapLoader.TileSize * (zz - z), y + SimpleMapLoader.TileSize * (zz - z),
+					zz);
+			if (lTile != null && lTile.isTileEmCima(x, y, z))
+				return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -136,7 +146,7 @@ public class Tile implements tickRender {
 					}
 					dx -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
 					dy -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
-					if (z == SimpleMapLoader.player.getZ()) {
+					if (z == SimpleMapLoader.player.getZ() && !temTileAcima()) {
 						if (getPropriedade("renderLayerPosWorldRender") != null
 								&& getPropriedade("renderLayerPosWorldRender").toString()
 										.contentEquals((iLayer + 1) + ""))
