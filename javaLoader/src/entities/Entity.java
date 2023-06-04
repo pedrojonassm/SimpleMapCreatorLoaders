@@ -29,7 +29,7 @@ public class Entity implements tickRender {
 	public Entity(int x, int y, int z) {
 		this.x = x;
 		this.y = y;
-		this.horizontal = z;
+		this.z = z;
 		tile_speed = 0;
 		left = right = up = down = aBloqueadoMovimentacao = false;
 		speed = 4;

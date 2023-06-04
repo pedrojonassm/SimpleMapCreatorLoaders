@@ -161,8 +161,8 @@ public class World {
 					}
 				}
 
-		for (int yy = ystart; yy <= yfinal; yy++) {
-			for (int xx = xstart; xx <= xfinal; xx++) {
+		for (int xx = xstart; xx <= xfinal; xx++) {
+			for (int yy = ystart; yy <= yfinal; yy++) {
 				for (int zz = 0; zz < maxRenderingZ; zz++) {
 					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
@@ -183,8 +183,9 @@ public class World {
 					}
 				}
 			}
+
 		}
-		renderizarDepois.clear();
+
 	}
 
 	public static void renderizarImagemDepois(int prXX, int prYY, Graphics prGraphics, BufferedImage image, int prPosX,
