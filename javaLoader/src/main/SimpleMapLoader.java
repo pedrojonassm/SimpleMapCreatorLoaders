@@ -69,7 +69,6 @@ public class SimpleMapLoader extends Canvas
 		world = new World(null);
 		podeNovaMovimentacao = true;
 		if (World.ok) {
-			entities = new ArrayList<>();
 			startGerador();
 			initFrame();
 		}
@@ -81,10 +80,12 @@ public class SimpleMapLoader extends Canvas
 		player = new Player(aConfig.getPlayerX(), aConfig.getPlayerY(), 0);
 		World.log_ts = Uteis.log(SimpleMapLoader.TileSize, 2);
 		ui = new Ui();
+		entities = new ArrayList<>();
 		World.carregarSprites();
 		control = shift = clique_no_mapa = false;
 		random = new Random();
 		image = new BufferedImage(windowWidth, windowHEIGHT, BufferedImage.TYPE_INT_RGB);
+		world.executarEventosUnico();
 		World.ready = true;
 	}
 
@@ -336,6 +337,7 @@ public class SimpleMapLoader extends Canvas
 					if (lTile.getaPropriedades() != null) {
 						lTile.dispararEventos();
 					}
+
 				}
 				clique_no_mapa = true;
 				aCliqueMouse = 3;

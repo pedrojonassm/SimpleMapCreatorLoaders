@@ -19,6 +19,8 @@ public class Player extends Entity implements tickRender {
 		super(x, y, z);
 
 		aPosAtual = aPosAlvo = -1;
+
+		definirSprites(SalvarCarregar.aAllSprites.get(6));
 	}
 
 	public void tick() {

@@ -36,8 +36,7 @@ public class Astar {
 	}
 
 	public static ArrayList<Tile> findPath(Tile start, Tile end, boolean isPlayer) {
-		if (((!isPlayer && end.Solid()) || (isPlayer && end.playerSolid())))
-			return new ArrayList<>();
+
 		List<Node> lCoNodes = findPath(new Vector2i(start.getX(), start.getY(), start.getZ()),
 				new Vector2i(end.getX(), end.getY(), end.getZ()), isPlayer);
 		if (lCoNodes == null || lCoNodes.size() == 0)
@@ -66,31 +65,31 @@ public class Astar {
 		Tile tile;
 		Vector2i a;
 		Node node;
-		double gCost;
+		double gCost = 0;
+
+		Node lObjetivo = null;
 
 		while (openList.size() > 0) {
 			Collections.sort(openList, nodeSorter);
 			current = openList.get(0);
-			if (current.tile.equals(end)) {
-				List<Node> path = new ArrayList<Node>();
-				while (current.parent != null) {
-					path.add(current);
-					current = current.parent;
-				}
-				openList.clear();
-				closedList.clear();
-				return path;
+
+			if (lObjetivo != null && lObjetivo.gCost < gCost) {
+				closedList.add(current);
+
+				openList.remove(current);
+				continue;
 			}
 
+			if (current.tile.equals(end) && (lObjetivo == null || lObjetivo.gCost > current.gCost))
+				lObjetivo = current;
+
 			openList.remove(current);
+			if (NodeInList(closedList, current)) {
+				continue;
+			}
 			closedList.add(current);
 
 			atual = current;
-
-			if (World.pegar_chao(current.tile.x, current.tile.y, current.tile.z).isEscada()
-					&& vecInList(closedList, current.tile)) {
-				continue;
-			}
 
 			for (int horizontal = -1; horizontal <= 1; horizontal++)
 				for (int vertical = -1; vertical <= 1; vertical++) {
@@ -104,22 +103,31 @@ public class Astar {
 					z = current.tile.z;
 					tile = World.pegar_chao(x + horizontal * SimpleMapLoader.TileSize,
 							y + vertical * SimpleMapLoader.TileSize, z);
-					if (tile == null || ((!isPlayer && tile.Solid()) || (isPlayer && tile.playerSolid())))
+					if (tile == null || ((!isPlayer
+							&& (end.x != tile.getX() || end.y != tile.getY() || end.z != tile.getZ()) && tile.Solid())
+							|| (isPlayer && (end.x != tile.getX() || end.y != tile.getY() || end.z != tile.getZ())
+									&& tile.playerSolid())))
 						continue;
 
 					do {
 
 						a = new Vector2i(tile.getX(), tile.getY(), tile.getZ());
-						gCost = current.gCost + ((vertical != 0 && horizontal != 0) ? 3 : 1)
-								+ (tile.isEscada() ? 5 : 0);
+						gCost = current.gCost - tile.ModificadorVelocidade()
+								+ ((vertical != 0 && horizontal != 0) ? 3 : 1) + (tile.isEscada() ? 5 : 0);
+
+						if (gCost < 0)
+							gCost = ((vertical != 0 && horizontal != 0) ? 3 : 1) + (tile.isEscada() ? 5 : 0);
 
 						node = new Node(a, current, gCost);
 
-						if (vecInList(closedList, a) && gCost >= current.gCost) {
+						if (node.fCost < 0)
+							node.fCost = 0;
+
+						if (NodeInList(closedList, node) && gCost >= current.gCost) {
 							break;
 						}
 
-						if (!vecInList(openList, a)) {
+						if (!NodeInList(openList, node)) {
 							openList.add(node);
 						} else if (gCost < current.gCost + current.fCost) {
 							openList.remove(current);
@@ -135,14 +143,28 @@ public class Astar {
 				}
 
 		}
+
+		if (lObjetivo != null && lObjetivo.gCost < gCost) {
+			List<Node> path = new ArrayList<Node>();
+			while (lObjetivo.parent != null) {
+				path.add(lObjetivo);
+				lObjetivo = lObjetivo.parent;
+			}
+			openList.clear();
+			closedList.clear();
+			return path;
+		}
 		closedList.clear();
 		return null;
 	}
 
-	private static boolean vecInList(List<Node> list, Vector2i vector) {
+	private static boolean NodeInList(List<Node> list, Node prCurrent) {
 		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i).tile.equals(vector)) {
-				return true;
+			if (list.get(i).tile.equals(prCurrent.tile)) {
+				if (list.get(i).fCost <= prCurrent.fCost)
+					return true;
+				list.remove(i);
+				break;
 			}
 		}
 		return false;

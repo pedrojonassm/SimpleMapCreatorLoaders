@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import entities.allies.NPC;
 import graficos.ConjuntoSprites;
 import graficos.Ui;
 import graficos.telas.Sprite;
@@ -251,18 +252,23 @@ public class Tile implements tickRender {
 	}
 
 	public boolean Solid() {
-		if (aPropriedades == null || getPropriedade("Solid") == null)
+		if (aPropriedades == null || (getPropriedade("Solid") == null && getPropriedade("contemEntidade") == null))
 			return false;
 		try {
-			if (getPropriedade("Solid").toString().startsWith("ConjuntoNot=")) {
-				if (getPosicao_Conjunto() != Integer.parseInt(getPropriedade("Solid").toString().split("=")[1]))
+			if (getPropriedade("Solid") != null) {
+				if (getPropriedade("Solid").toString().startsWith("ConjuntoNot=")) {
+					if (getPosicao_Conjunto() != Integer.parseInt(getPropriedade("Solid").toString().split("=")[1]))
+						return true;
+				} else if (getPropriedade("Solid").toString().startsWith("Conjunto=")) {
+					if (getPosicao_Conjunto() == Integer.parseInt(getPropriedade("Solid").toString().split("=")[1]))
+						return true;
+				} else if (Boolean.valueOf(getPropriedade("Solid").toString())
+						|| Integer.parseInt(getPropriedade("Solid").toString()) == 1)
 					return true;
-			} else if (getPropriedade("Solid").toString().startsWith("Conjunto=")) {
-				if (getPosicao_Conjunto() == Integer.parseInt(getPropriedade("Solid").toString().split("=")[1]))
+			} else if (getPropriedade("contemEntidade") != null) {
+				if (Boolean.valueOf(getPropriedade("contemEntidade").toString()))
 					return true;
-			} else if (Boolean.valueOf(getPropriedade("Solid").toString())
-					|| Integer.parseInt(getPropriedade("Solid").toString()) == 1)
-				return true;
+			}
 
 		} catch (Exception e) {
 		}
@@ -311,6 +317,13 @@ public class Tile implements tickRender {
 	public void dispararEventos() {
 		for (Entry<String, Object> iEntrySet : aPropriedades.entrySet()) {
 			System.out.println(iEntrySet.getKey() + " = " + iEntrySet.getValue());
+		}
+	}
+
+	public void eventosUnicos() {
+
+		if (getPropriedade("NPC") != null) {
+			SimpleMapLoader.entities.add(new NPC(this, getPropriedade("NPC").toString()));
 		}
 	}
 

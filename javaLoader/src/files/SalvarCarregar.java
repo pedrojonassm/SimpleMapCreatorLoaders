@@ -29,8 +29,10 @@ public class SalvarCarregar {
 	private ArrayList<String> mundosDisponiveis;
 
 	public static final String nameFileWorld = "world.world", nameFileWorldconfig = "world.config",
-			startWorldName = "teste", nameFolderImagens = "imagens", nameFileImageData = "data.config",
+			startWorldName = "mapaTCC", nameFolderImagens = "imagens", nameFileImageData = "data.config",
 			nameImagem = "image.png";
+
+	public static ArrayList<String> aAllSprites, aSpritesUtilizados;
 
 	public SalvarCarregar() {
 		try {
@@ -39,9 +41,16 @@ public class SalvarCarregar {
 					URLDecoder.decode(getClass().getResource("/personagens").getFile(), "UTF-8"));
 			if (aArquivoMundos.exists()) {
 				mundosDisponiveis = listFoldersInFolder(aArquivoMundos);
+				if (aArquivoPersonagens.exists()) {
+					aAllSprites = listFilesInFolder(aArquivoPersonagens);
+				} else
+					aAllSprites = new ArrayList<>();
+
+				aSpritesUtilizados = new ArrayList<>();
 
 			} else {
 				mundosDisponiveis = new ArrayList<>();
+
 			}
 
 		} catch (UnsupportedEncodingException e) {
@@ -64,6 +73,14 @@ public class SalvarCarregar {
 			} else {
 				retorno.add(folder.getName() + "/" + fileEntry.getName());
 			}
+		}
+		return retorno;
+	}
+
+	private ArrayList<String> listFilesInFolder(File prArquivo) {
+		ArrayList<String> retorno = new ArrayList<String>();
+		for (final File fileEntry : prArquivo.listFiles()) {
+			retorno.add(fileEntry.getName());
 		}
 		return retorno;
 	}

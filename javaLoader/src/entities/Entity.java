@@ -2,10 +2,14 @@ package entities;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import entities.allies.Player;
+import files.SalvarCarregar;
+import graficos.Spritesheet;
 import main.SimpleMapLoader;
 import main.Uteis;
 import main.interfaces.tickRender;
@@ -18,7 +22,10 @@ public class Entity implements tickRender {
 	protected int x, y, z, tile_speed;
 	public boolean left, right, up, down, aBloqueadoMovimentacao;
 
-	protected int horizontal, vertical, speed;
+	protected int horizontal, vertical, speed, minSpriteAnimation, maxSpriteAnimation, animationTime, maxAnimationTime,
+			spriteADesenhar;
+
+	protected BufferedImage[] sprites;
 
 	protected boolean forceRenderSize;
 
@@ -29,13 +36,37 @@ public class Entity implements tickRender {
 	public Entity(int x, int y, int z) {
 		this.x = x;
 		this.y = y;
-		this.horizontal = z;
+		this.z = z;
 		tile_speed = 0;
 		left = right = up = down = aBloqueadoMovimentacao = false;
 		speed = 4;
 		horizontal = vertical = 0;
 		forceRenderSize = false;
 		aCaminho = new ArrayList<>();
+		maxAnimationTime = 8;
+	}
+
+	protected void randomSprites() {
+		if (SalvarCarregar.aSpritesUtilizados.isEmpty())
+			SalvarCarregar.aSpritesUtilizados.addAll(SalvarCarregar.aAllSprites);
+
+		int lPosicaoImagem = SimpleMapLoader.random.nextInt(SalvarCarregar.aSpritesUtilizados.size());
+		definirSprites(SalvarCarregar.aSpritesUtilizados.get(lPosicaoImagem));
+		SalvarCarregar.aSpritesUtilizados.remove(lPosicaoImagem);
+	}
+
+	protected void definirSprites(String prImagem) {
+		if (SalvarCarregar.aArquivoPersonagens != null && SalvarCarregar.aArquivoPersonagens.exists()) {
+
+			File lImagem = new File(SalvarCarregar.aArquivoPersonagens, prImagem);
+			if (lImagem.exists()) {
+				Spritesheet lSpritesheet = new Spritesheet(lImagem, 12, 32, 36, "");
+				sprites = lSpritesheet.get_x_sprites(lSpritesheet.getTotalSprites());
+			}
+			forceRenderSize = true;
+			spriteADesenhar = 5;
+
+		}
 	}
 
 	@Override
@@ -55,8 +86,13 @@ public class Entity implements tickRender {
 			if (aCaminho.size() > 0)
 				aCaminho.remove(0);
 
+			minSpriteAnimation = (minSpriteAnimation + maxSpriteAnimation) / 2;
+			maxSpriteAnimation = minSpriteAnimation;
+
 			if (this instanceof Player)
 				SimpleMapLoader.player.aPosAtual = SimpleMapLoader.player.aPosAlvo;
+
+			sqm_alvo.addPropriedade("contemEntidade", true);
 
 			sqm_alvo = null;
 		} else if (sqm_alvo == null) {
@@ -118,22 +154,36 @@ public class Entity implements tickRender {
 						sqm_alvo = null;
 						if (aCaminho.size() > 0)
 							aCaminho.clear();
+						minSpriteAnimation = (minSpriteAnimation + maxSpriteAnimation) / 2;
+						maxSpriteAnimation = minSpriteAnimation;
 					} else if (Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed * 3
 							+ Uteis.modulo(tile_speed) * 2)
 						aBloqueadoMovimentacao = true;
 				}
-
-				if (sqm_alvo != null && this instanceof Player)
-					SimpleMapLoader.player.aPosAlvo = sqm_alvo.getaPos();
 
 				if (lInverteuVelocidade) {
 					horizontal *= -1;
 					vertical *= -1;
 				}
 			}
+			if (sqm_alvo != null) {
+				Tile lTile = World.pegar_chao(x, y, z);
+				if (lTile != null)
+					lTile.removePropriedade("contemEntidade");
+				if (this instanceof Player)
+					SimpleMapLoader.player.aPosAlvo = sqm_alvo.getaPos();
+			}
 		} else {
 			x += (speed + tile_speed) * horizontal;
 			y += (speed + tile_speed) * vertical;
+		}
+
+		if (++animationTime >= maxAnimationTime) {
+			animationTime = 0;
+			if (spriteADesenhar < minSpriteAnimation)
+				spriteADesenhar = minSpriteAnimation;
+			else if (++spriteADesenhar >= maxSpriteAnimation)
+				spriteADesenhar = minSpriteAnimation;
 		}
 
 		colidindo_com_escada();
@@ -144,6 +194,20 @@ public class Entity implements tickRender {
 	}
 
 	public void changeAnimation() {
+		if (vertical == 1) {
+			minSpriteAnimation = 6;
+			maxSpriteAnimation = 8;
+		} else if (vertical == -1) {
+			minSpriteAnimation = 0;
+			maxSpriteAnimation = 2;
+		}
+		if (horizontal == 1) {
+			minSpriteAnimation = 3;
+			maxSpriteAnimation = 5;
+		} else if (horizontal == -1) {
+			minSpriteAnimation = 9;
+			maxSpriteAnimation = 11;
+		}
 	}
 
 	public void setaCaminho(ArrayList<Tile> prCaminho) {
@@ -199,8 +263,17 @@ public class Entity implements tickRender {
 		Tile lTileAcima = World.pegar_chao(x, y, z + 1);
 		if (z == SimpleMapLoader.player.getZ()
 				&& (lTileAcima == null || lTileAcima.getZ() >= World.maxRenderingZ || !lTileAcima.tem_sprites())) {
-			prGraphics.setColor(Color.WHITE);
-			prGraphics.fillRect(x - Camera.x, y - Camera.y, SimpleMapLoader.TileSize, SimpleMapLoader.TileSize);
+			if (sprites == null || spriteADesenhar >= sprites.length) {
+				prGraphics.setColor(Color.WHITE);
+				prGraphics.fillRect(x - Camera.x, y - Camera.y, SimpleMapLoader.TileSize, SimpleMapLoader.TileSize);
+			} else {
+				prGraphics.setColor(Color.WHITE);
+				if (forceRenderSize)
+					prGraphics.drawImage(sprites[spriteADesenhar], x - Camera.x, y - Camera.y, SimpleMapLoader.TileSize,
+							SimpleMapLoader.TileSize, null);
+				else
+					prGraphics.drawImage(sprites[spriteADesenhar], x - Camera.x, y - Camera.y, null);
+			}
 
 		}
 	}
