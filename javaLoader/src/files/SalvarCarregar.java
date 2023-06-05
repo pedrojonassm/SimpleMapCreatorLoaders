@@ -24,7 +24,7 @@ import world.World;
 
 public class SalvarCarregar {
 
-	public static File aArquivoMundos, aArquivoPersonagens;
+	public static File aArquivoMundos, aArquivoPersonagens, aArquivosSlides;
 
 	private ArrayList<String> mundosDisponiveis;
 
@@ -39,6 +39,7 @@ public class SalvarCarregar {
 			aArquivoMundos = new File(URLDecoder.decode(getClass().getResource("/mundos").getFile(), "UTF-8"));
 			aArquivoPersonagens = new File(
 					URLDecoder.decode(getClass().getResource("/personagens").getFile(), "UTF-8"));
+			aArquivosSlides = new File(URLDecoder.decode(getClass().getResource("/slides").getFile(), "UTF-8"));
 			if (aArquivoMundos.exists()) {
 				mundosDisponiveis = listFoldersInFolder(aArquivoMundos);
 				if (aArquivoPersonagens.exists()) {
@@ -77,7 +78,7 @@ public class SalvarCarregar {
 		return retorno;
 	}
 
-	private ArrayList<String> listFilesInFolder(File prArquivo) {
+	public static ArrayList<String> listFilesInFolder(File prArquivo) {
 		ArrayList<String> retorno = new ArrayList<String>();
 		for (final File fileEntry : prArquivo.listFiles()) {
 			retorno.add(fileEntry.getName());

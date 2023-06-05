@@ -315,8 +315,19 @@ public class SimpleMapLoader extends Canvas
 				clique_no_mapa = true;
 				aCliqueMouse = 1;
 				aTrocouPosicao = true;
-				player.setaCaminho(Astar.findPath(World.pegar_chao(player.getX(), player.getY(), player.getZ()),
-						World.pegar_chao(aPos), true));
+				if (!control)
+					player.setaCaminho(Astar.findPath(World.pegar_chao(player.getX(), player.getY(), player.getZ()),
+							World.pegar_chao(aPos), true));
+				else {
+					// TODO reetirar isso depois
+					Entity lEntity = entities.get(random.nextInt(entities.size()));
+
+					ArrayList<Tile> teste = Astar.findPath(
+							World.pegar_chao(lEntity.getX(), lEntity.getY(), lEntity.getZ()),
+							World.pegar_chao(player.getX(), player.getY(), player.getZ()), false);
+
+					lEntity.setaCaminho(teste);
+				}
 				return;
 			} else {
 				ui.cliqueUi = true;

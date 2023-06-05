@@ -3,8 +3,13 @@ package graficos;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+
+import files.SalvarCarregar;
 import graficos.telas.Tela;
 
 public class Ui implements Tela {
@@ -14,10 +19,26 @@ public class Ui implements Tela {
 
 	public boolean cliqueUi;
 
+	BufferedImage[] aSlides;
+
 	public Ui() {
 		cliqueUi = false;
 		mostrar = true;
 		renderizarDepois = new ArrayList<>();
+
+		if (SalvarCarregar.aArquivosSlides.exists()) {
+			File lSlide;
+			aSlides = new BufferedImage[7];
+			for (int i = 1; i <= 7; i++) {
+				lSlide = new File(SalvarCarregar.aArquivosSlides, "slide-" + i + ".png");
+				if (lSlide.exists())
+					try {
+						aSlides[i - 1] = ImageIO.read(lSlide);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			}
+		}
 	}
 
 	public void tick() {

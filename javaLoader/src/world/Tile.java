@@ -76,6 +76,31 @@ public class Tile implements tickRender {
 
 	@Override
 	public void tick() {
+		if (World.secondsCount != 0 && getPropriedade("trocarConjuntoDeTempo") != null) {
+			if (getPropriedade("trocarConjuntoDeTempoLast") != null) {
+				posicao_Conjunto = getPosicao_Conjunto();
+			}
+			if (getPropriedade("trocarConjuntoDeTempoLast") == null
+					|| !getPropriedade("trocarConjuntoDeTempoLast").toString().contentEquals(World.secondsCount + "")) {
+				try {
+					if (World.secondsCount
+							% Integer.parseInt(getPropriedade("trocarConjuntoDeTempo").toString()) == 0) {
+						if (getPropriedade("ProximoConjuntoAleatorio") != null
+								&& Boolean.valueOf(getPropriedade("ProximoConjuntoAleatorio").toString()))
+							posicao_Conjunto = SimpleMapLoader.random.nextInt(CoConjuntoSprites.size());
+						else
+							posicao_Conjunto++;
+						if (posicao_Conjunto >= CoConjuntoSprites.size())
+							posicao_Conjunto = 0;
+						addPropriedade("trocarConjuntoDeTempoLast", World.secondsCount + "");
+					}
+
+				} catch (Exception e) {
+
+				}
+
+			}
+		}
 	}
 
 	public boolean isTileEmCima(int prX, int prY, int prZ) {
@@ -276,7 +301,7 @@ public class Tile implements tickRender {
 	}
 
 	public boolean playerSolid() {
-		if (aPropriedades == null || getPropriedade("Solid") == null)
+		if (aPropriedades == null || (getPropriedade("Solid") == null && getPropriedade("contemEntidade") == null))
 			return false;
 		if (Solid())
 			return true;
@@ -317,6 +342,32 @@ public class Tile implements tickRender {
 	public void dispararEventos() {
 		for (Entry<String, Object> iEntrySet : aPropriedades.entrySet()) {
 			System.out.println(iEntrySet.getKey() + " = " + iEntrySet.getValue());
+		}
+
+		if (getPropriedade("ProximoConjuntoAoInteragir") != null) {
+			try {
+				posicao_Conjunto += Integer.parseInt(getPropriedade("ProximoConjuntoAoInteragir").toString());
+			} catch (Exception e) {
+				posicao_Conjunto++;
+			}
+
+			if (posicao_Conjunto >= CoConjuntoSprites.size())
+				posicao_Conjunto = 0;
+		}
+		if (getPropriedade("TrocarConjuntoDePara") != null) {
+			try {
+				String[] lSet = getPropriedade("TrocarConjuntoDePara").toString().split("=");
+				Tile lTile = World.pegar_chao(Integer.parseInt(lSet[0]));
+				if (lTile != null)
+					lTile.setPosicao_Conjunto(Integer.parseInt(lSet[1]));
+			} catch (Exception e) {
+			}
+		}
+		if (getPropriedade("TrocarConjuntoAoInteragirPara") != null) {
+			try {
+				setPosicao_Conjunto(Integer.parseInt(getPropriedade("TrocarConjuntoAoInteragirPara").toString()));
+			} catch (Exception e) {
+			}
 		}
 	}
 

@@ -19,7 +19,8 @@ public class World {
 	public static int WIDTH, HEIGHT, HIGH;
 	public static HashMap<String, BufferedImage[]> spritesCarregados;
 
-	public static int log_ts, tiles_index, tiles_animation_time, max_tiles_animation_time, maxRenderingZ;
+	public static int log_ts, tiles_index, tiles_animation_time, max_tiles_animation_time, maxRenderingZ, tickCount,
+			secondsCount;
 	public static boolean ready, ok;
 	public static File aArquivo;
 
@@ -28,6 +29,8 @@ public class World {
 	public World(File prFile) {
 		ready = false;
 		tiles_index = tiles_animation_time = 0;
+		tickCount = 0;
+		secondsCount = 0;
 		max_tiles_animation_time = 15;
 		renderizarDepois = new HashMap<Integer, HashMap<Integer, ArrayList<Runnable>>>();
 		try {
@@ -104,6 +107,12 @@ public class World {
 	}
 
 	public void tick() {
+		if (++tickCount > 60) {
+			tickCount = 0;
+			secondsCount++;
+			if (secondsCount > 3600)
+				secondsCount = 0;
+		}
 		if (++tiles_animation_time >= max_tiles_animation_time) {
 			tiles_animation_time = 0;
 			if (++tiles_index >= 100) {
@@ -151,10 +160,9 @@ public class World {
 		maxRenderingZ = HIGH;
 
 		boolean lBreak = false;
-
-		for (int xx = SimpleMapLoader.player.getX() >> log_ts + 1; xx <= xfinal && !lBreak; xx++)
-			for (int yy = SimpleMapLoader.player.getY() >> log_ts + 1; yy <= yfinal && !lBreak; yy++)
-				for (int zz = 1; zz < HIGH - SimpleMapLoader.player.getZ() - 1 && !lBreak; zz++) {
+		for (int zz = 1; zz < HIGH - SimpleMapLoader.player.getZ() - 1 && !lBreak; zz++)
+			for (int xx = SimpleMapLoader.player.getX() >> log_ts + 1; xx <= xfinal && !lBreak; xx++)
+				for (int yy = SimpleMapLoader.player.getY() >> log_ts + 1; yy <= yfinal && !lBreak; yy++) {
 					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
 					}
@@ -166,31 +174,31 @@ public class World {
 						lBreak = true;
 					}
 				}
+		for (int zz = 0; zz < maxRenderingZ; zz++)
+			for (int xx = xstart; xx <= xfinal; xx++) {
+				for (int yy = ystart; yy <= yfinal; yy++) {
+					{
+						if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
+							continue;
+						}
 
-		for (int xx = xstart; xx <= xfinal; xx++) {
-			for (int yy = ystart; yy <= yfinal; yy++) {
-				for (int zz = 0; zz < maxRenderingZ; zz++) {
-					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
-						continue;
+						lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
+						if (lTile != null) {
+							lTile.render(g);
+							if (lTile.getaPos() == SimpleMapLoader.player.aPosAtual
+									|| lTile.getaPos() == SimpleMapLoader.player.aPosAlvo)
+								SimpleMapLoader.player.render(g);
+						}
 					}
-
-					lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
-					if (lTile != null) {
-						lTile.render(g);
-						if (lTile.getaPos() == SimpleMapLoader.player.aPosAtual
-								|| lTile.getaPos() == SimpleMapLoader.player.aPosAlvo)
-							SimpleMapLoader.player.render(g);
+					if (renderizarDepois.get(xx) != null && renderizarDepois.get(xx).get(yy) != null) {
+						while (renderizarDepois.get(xx).get(yy).size() > 0) {
+							renderizarDepois.get(xx).get(yy).get(0).run();
+							renderizarDepois.get(xx).get(yy).remove(0);
+						}
 					}
 				}
-				if (renderizarDepois.get(xx) != null && renderizarDepois.get(xx).get(yy) != null) {
-					while (renderizarDepois.get(xx).get(yy).size() > 0) {
-						renderizarDepois.get(xx).get(yy).get(0).run();
-						renderizarDepois.get(xx).get(yy).remove(0);
-					}
-				}
+
 			}
-
-		}
 
 	}
 

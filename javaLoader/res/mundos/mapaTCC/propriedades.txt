@@ -25,8 +25,8 @@ trocarConjuntoDeTempo:
 	"20"
 	"30"
 	"40"
-	"360"
 	"180"
+	"15"
 
 TRANSPORT:
 	"{TYPE=colisao, DESTINY=[2, 0, 1]}"
@@ -59,6 +59,7 @@ TrocarConjuntoDePara:
 	"1150=1"
 	"1170=1"
 	"2550=1"
+	"2350=1"
 	"2370=1"
 	"3550=1"
 	"3570=1"
