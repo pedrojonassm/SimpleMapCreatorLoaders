@@ -106,8 +106,19 @@ public class Astar {
 					if (tile == null || ((!isPlayer
 							&& (end.x != tile.getX() || end.y != tile.getY() || end.z != tile.getZ()) && tile.Solid())
 							|| (isPlayer && (end.x != tile.getX() || end.y != tile.getY() || end.z != tile.getZ())
-									&& tile.playerSolid())))
-						continue;
+									&& tile.playerSolid()))) {
+						if (!isPlayer && tile != null) {
+							// se pode abrir a porta
+							tile.dispararEventoUnico("ProximoConjuntoAoInteragir");
+							if (tile.Solid()) {
+								tile.dispararEventoUnico("ProximoConjuntoAoInteragir");
+								continue;
+							}
+							tile.dispararEventoUnico("ProximoConjuntoAoInteragir");
+
+						} else
+							continue;
+					}
 
 					do {
 

@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import entities.allies.NPC;
 import entities.allies.Player;
 import files.SalvarCarregar;
 import graficos.Spritesheet;
@@ -33,6 +34,8 @@ public class Entity implements tickRender {
 
 	protected ArrayList<Tile> aCaminho;
 
+	private ArrayList<Runnable> aExecutarAposMover;
+
 	public Entity(int x, int y, int z) {
 		this.x = x;
 		this.y = y;
@@ -43,6 +46,7 @@ public class Entity implements tickRender {
 		horizontal = vertical = 0;
 		forceRenderSize = false;
 		aCaminho = new ArrayList<>();
+		aExecutarAposMover = new ArrayList<>();
 		maxAnimationTime = 8;
 	}
 
@@ -93,6 +97,11 @@ public class Entity implements tickRender {
 				SimpleMapLoader.player.aPosAtual = SimpleMapLoader.player.aPosAlvo;
 
 			sqm_alvo.addPropriedade("contemEntidade", true);
+
+			for (int i = 0; i < aExecutarAposMover.size(); i++) {
+				aExecutarAposMover.get(i).run();
+				aExecutarAposMover.remove(0);
+			}
 
 			sqm_alvo = null;
 		} else if (sqm_alvo == null) {
@@ -151,11 +160,22 @@ public class Entity implements tickRender {
 
 				if (sqm_alvo != null) {
 					if ((this instanceof Player) ? sqm_alvo.playerSolid() : sqm_alvo.Solid()) {
-						sqm_alvo = null;
-						if (aCaminho.size() > 0)
-							aCaminho.clear();
-						minSpriteAnimation = (minSpriteAnimation + maxSpriteAnimation) / 2;
-						maxSpriteAnimation = minSpriteAnimation;
+						Boolean lSolid = true;
+						if (this instanceof NPC) {
+							sqm_alvo.dispararEventoUnico("ProximoConjuntoAoInteragir");
+							lSolid = sqm_alvo.Solid();
+						}
+
+						if (lSolid) {
+							sqm_alvo = null;
+							if (aCaminho.size() > 0)
+								aCaminho.clear();
+							minSpriteAnimation = (minSpriteAnimation + maxSpriteAnimation) / 2;
+							maxSpriteAnimation = minSpriteAnimation;
+						} else {
+							aExecutarAposMover.add(() -> sqm_alvo.dispararEventoUnico("ProximoConjuntoAoInteragir"));
+						}
+
 					} else if (Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed * 3
 							+ Uteis.modulo(tile_speed) * 2)
 						aBloqueadoMovimentacao = true;

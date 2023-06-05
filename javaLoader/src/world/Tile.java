@@ -339,36 +339,53 @@ public class Tile implements tickRender {
 				prFromY + (prPosicaoRelativa.get(1) << World.log_ts), prFromZ + prPosicaoRelativa.get(2));
 	}
 
+	public void dispararEventoUnico(String prEvento) {
+		switch (prEvento) {
+		case "ProximoConjuntoAoInteragir":
+			if (getPropriedade("ProximoConjuntoAoInteragir") != null) {
+				try {
+					posicao_Conjunto += Integer.parseInt(getPropriedade("ProximoConjuntoAoInteragir").toString());
+				} catch (Exception e) {
+					posicao_Conjunto++;
+				}
+
+				if (posicao_Conjunto >= CoConjuntoSprites.size())
+					posicao_Conjunto = 0;
+			}
+			break;
+
+		case "TrocarConjuntoDePara":
+			if (getPropriedade("TrocarConjuntoDePara") != null) {
+				try {
+					String[] lSet = getPropriedade("TrocarConjuntoDePara").toString().split("=");
+					Tile lTile = World.pegar_chao(Integer.parseInt(lSet[0]));
+					if (lTile != null)
+						lTile.setPosicao_Conjunto(Integer.parseInt(lSet[1]));
+				} catch (Exception e) {
+				}
+			}
+			break;
+
+		case "TrocarConjuntoAoInteragirPara":
+			if (getPropriedade("TrocarConjuntoAoInteragirPara") != null) {
+				try {
+					setPosicao_Conjunto(Integer.parseInt(getPropriedade("TrocarConjuntoAoInteragirPara").toString()));
+				} catch (Exception e) {
+				}
+			}
+			break;
+
+		default:
+		}
+
+	}
+
 	public void dispararEventos() {
 		for (Entry<String, Object> iEntrySet : aPropriedades.entrySet()) {
 			System.out.println(iEntrySet.getKey() + " = " + iEntrySet.getValue());
+			dispararEventoUnico(iEntrySet.getKey());
 		}
 
-		if (getPropriedade("ProximoConjuntoAoInteragir") != null) {
-			try {
-				posicao_Conjunto += Integer.parseInt(getPropriedade("ProximoConjuntoAoInteragir").toString());
-			} catch (Exception e) {
-				posicao_Conjunto++;
-			}
-
-			if (posicao_Conjunto >= CoConjuntoSprites.size())
-				posicao_Conjunto = 0;
-		}
-		if (getPropriedade("TrocarConjuntoDePara") != null) {
-			try {
-				String[] lSet = getPropriedade("TrocarConjuntoDePara").toString().split("=");
-				Tile lTile = World.pegar_chao(Integer.parseInt(lSet[0]));
-				if (lTile != null)
-					lTile.setPosicao_Conjunto(Integer.parseInt(lSet[1]));
-			} catch (Exception e) {
-			}
-		}
-		if (getPropriedade("TrocarConjuntoAoInteragirPara") != null) {
-			try {
-				setPosicao_Conjunto(Integer.parseInt(getPropriedade("TrocarConjuntoAoInteragirPara").toString()));
-			} catch (Exception e) {
-			}
-		}
 	}
 
 	public void eventosUnicos() {
