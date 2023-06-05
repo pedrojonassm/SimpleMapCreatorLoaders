@@ -38,9 +38,6 @@ TRANSPORT:
 	"{TYPE=colisao, DESTINY=[0, 2, 1]}"
 	"{TYPE=colisao, DESTINY=[1, -1, -1]}"
 
-evento:
-	"Porta"
-
 TrocarConjuntoAoInteragirPara:
 	"0"
 
@@ -70,4 +67,7 @@ Solid:
 	"true"
 	"True"
 	"ConjuntoNot=0"
+
+portaNPC:
+	"true"
 

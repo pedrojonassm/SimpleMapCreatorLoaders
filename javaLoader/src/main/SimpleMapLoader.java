@@ -266,6 +266,10 @@ public class SimpleMapLoader extends Canvas
 			Ui.mostrar = !Ui.mostrar;
 			return;
 		}
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+			world.forcarMovimentoGeral();
+			return;
+		}
 		if (e.getKeyCode() == KeyEvent.VK_OPEN_BRACKET) {
 			ui.nextSlide(-1);
 			return;

@@ -6,6 +6,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import entities.Entity;
+import entities.allies.NPC;
+import entities.ia.Astar;
 import files.SalvarCarregar;
 import graficos.Spritesheet;
 import main.SimpleMapLoader;
@@ -21,8 +24,10 @@ public class World {
 
 	public static int log_ts, tiles_index, tiles_animation_time, max_tiles_animation_time, maxRenderingZ, tickCount,
 			secondsCount;
-	public static boolean ready, ok;
+	public static boolean ready, ok, irParaCasa;
 	public static File aArquivo;
+
+	private int segundoUltimoMovimentoGeral;
 
 	private static HashMap<Integer, HashMap<Integer, ArrayList<Runnable>>> renderizarDepois;
 
@@ -30,7 +35,9 @@ public class World {
 		ready = false;
 		tiles_index = tiles_animation_time = 0;
 		tickCount = 0;
+		irParaCasa = true;
 		secondsCount = 0;
+		segundoUltimoMovimentoGeral = 1;
 		max_tiles_animation_time = 15;
 		renderizarDepois = new HashMap<Integer, HashMap<Integer, ArrayList<Runnable>>>();
 		try {
@@ -107,6 +114,7 @@ public class World {
 	}
 
 	public void tick() {
+
 		if (++tickCount > 60) {
 			tickCount = 0;
 			secondsCount++;
@@ -131,6 +139,37 @@ public class World {
 		if ((ystart -= (SimpleMapLoader.player.getZ() + 1)) < 0)
 			ystart = 0;
 
+		if (segundoUltimoMovimentoGeral != secondsCount && secondsCount % 300 == 0) {
+			irParaCasa = !irParaCasa;
+			if (!irParaCasa) {
+				Tile lTile;
+				for (Entity iEntity : SimpleMapLoader.entities) {
+					lTile = null;
+					if (iEntity instanceof NPC) {
+						while (lTile == null) {
+							lTile = tiles[((SimpleMapLoader.random.nextInt(xfinal - xstart) + xstart)
+									+ ((SimpleMapLoader.random.nextInt(yfinal - ystart) + ystart) * WIDTH)) * HIGH
+									+ SimpleMapLoader.player.getZ()];
+						}
+						iEntity.setaCaminho(
+								Astar.findPath(pegar_chao(iEntity.getX(), iEntity.getY(), iEntity.getZ()), lTile));
+					}
+
+				}
+			} else {
+				NPC lNpc;
+				for (Entity iEntity : SimpleMapLoader.entities) {
+					if (iEntity instanceof NPC) {
+						lNpc = (NPC) iEntity;
+						lNpc.setaCaminho(Astar.findPath(pegar_chao(iEntity.getX(), iEntity.getY(), iEntity.getZ()),
+								pegar_chao(lNpc.obterPosOrigem())));
+					}
+
+				}
+			}
+			segundoUltimoMovimentoGeral = secondsCount;
+		}
+
 		for (int xx = xstart; xx <= xfinal; xx++)
 			for (int yy = ystart; yy <= yfinal; yy++) {
 				if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
@@ -142,6 +181,11 @@ public class World {
 					lTile.tick();
 			}
 
+	}
+
+	public void forcarMovimentoGeral() {
+		segundoUltimoMovimentoGeral = 300;
+		secondsCount = 0;
 	}
 
 	public void render(Graphics g) {

@@ -172,10 +172,9 @@ public class Astar {
 	private static boolean NodeInList(List<Node> list, Node prCurrent) {
 		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i).tile.equals(prCurrent.tile)) {
-				if (list.get(i).fCost <= prCurrent.fCost)
+				if (list.get(i).fCost < prCurrent.fCost)
 					return true;
 				list.remove(i);
-				break;
 			}
 		}
 		return false;

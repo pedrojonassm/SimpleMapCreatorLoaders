@@ -103,6 +103,13 @@ public class Entity implements tickRender {
 				aExecutarAposMover.remove(0);
 			}
 
+			if (sqm_alvo.getPropriedade("portaNPC") != null) {
+				if (World.irParaCasa && !sqm_alvo.Solid())
+					sqm_alvo.dispararEventoUnico("ProximoConjuntoAoInteragir");
+				else if (!World.irParaCasa && sqm_alvo.Solid())
+					sqm_alvo.dispararEventoUnico("ProximoConjuntoAoInteragir");
+			}
+
 			sqm_alvo = null;
 		} else if (sqm_alvo == null) {
 			if (aCaminho.size() > 0) {
