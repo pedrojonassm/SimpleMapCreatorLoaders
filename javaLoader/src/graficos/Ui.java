@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 import files.SalvarCarregar;
 import graficos.telas.Tela;
+import main.SimpleMapLoader;
 
 public class Ui implements Tela {
 	public static boolean mostrar;
@@ -20,16 +21,18 @@ public class Ui implements Tela {
 	public boolean cliqueUi;
 
 	BufferedImage[] aSlides;
+	private int aSlide;
 
 	public Ui() {
 		cliqueUi = false;
 		mostrar = true;
 		renderizarDepois = new ArrayList<>();
+		aSlide = 0;
 
 		if (SalvarCarregar.aArquivosSlides.exists()) {
 			File lSlide;
-			aSlides = new BufferedImage[7];
-			for (int i = 1; i <= 7; i++) {
+			aSlides = new BufferedImage[11];
+			for (int i = 1; i <= 11; i++) {
 				lSlide = new File(SalvarCarregar.aArquivosSlides, "slide-" + i + ".png");
 				if (lSlide.exists())
 					try {
@@ -65,6 +68,11 @@ public class Ui implements Tela {
 	public void render(Graphics g) {
 		g.setColor(Color.white);
 
+		if (Ui.mostrar) {
+			if (aSlide >= 0 && aSlide < aSlides.length)
+				g.drawImage(aSlides[aSlide], 0, 0, SimpleMapLoader.windowWidth, SimpleMapLoader.windowHEIGHT, null);
+		}
+
 		if (renderizarDepois.size() > 0) {
 
 			for (Runnable iRunnable : renderizarDepois) {
@@ -74,11 +82,18 @@ public class Ui implements Tela {
 				}
 
 			}
-
 			renderizarDepois.clear();
 		}
 
 		g.setColor(Color.white);
+	}
+
+	public void nextSlide(int prNext) {
+		aSlide += prNext;
+		if (aSlide < 0)
+			aSlide = 0;
+		else if (aSlide >= aSlides.length)
+			aSlide = aSlides.length - 1;
 	}
 
 	public boolean clicou(int x, int y) {
