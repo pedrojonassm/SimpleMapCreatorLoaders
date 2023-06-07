@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import entities.allies.Player;
+import entities.ia.Astar;
 import main.SimpleMapLoader;
 import main.Uteis;
 import main.interfaces.tickRender;
@@ -116,8 +117,21 @@ public class Entity implements tickRender {
 				if (sqm_alvo != null) {
 					if ((this instanceof Player) ? sqm_alvo.playerSolid() : sqm_alvo.Solid()) {
 						sqm_alvo = null;
-						if (aCaminho.size() > 0)
-							aCaminho.clear();
+						if (aCaminho.size() > 0) {
+							aCaminho.remove(0);
+							if (aCaminho.size() > 0) {
+								// Procurando desvio
+								ArrayList<Tile> lCoTile = Astar.findPath(World.pegar_chao(x, y, z), aCaminho.get(0));
+								if (lCoTile != null && lCoTile.size() > 0) {
+									aCaminho.addAll(0, lCoTile);
+									sqm_alvo = aCaminho.get(0);
+								} else {
+									aCaminho.clear();
+								}
+
+							}
+
+						}
 					} else if (Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed * 3
 							+ Uteis.modulo(tile_speed) * 2)
 						aBloqueadoMovimentacao = true;

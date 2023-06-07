@@ -36,7 +36,7 @@ public class Astar {
 	}
 
 	public static ArrayList<Tile> findPath(Tile start, Tile end, boolean isPlayer) {
-		if (((!isPlayer && end.Solid()) || (isPlayer && end.playerSolid())))
+		if (start == null || end == null || ((!isPlayer && end.Solid()) || (isPlayer && end.playerSolid())))
 			return new ArrayList<>();
 		List<Node> lCoNodes = findPath(new Vector2i(start.getX(), start.getY(), start.getZ()),
 				new Vector2i(end.getX(), end.getY(), end.getZ()), isPlayer);
