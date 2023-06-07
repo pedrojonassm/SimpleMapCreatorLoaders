@@ -29,15 +29,17 @@ public class SalvarCarregar {
 	private ArrayList<String> mundosDisponiveis;
 
 	public static final String nameFileWorld = "world.world", nameFileWorldconfig = "world.config",
-			startWorldName = "teste", nameFolderImagens = "imagens", nameFileImageData = "data.config",
+			startWorldName = "mapaTCC", nameFolderImagens = "imagens", nameFileImageData = "data.config",
 			nameImagem = "image.png";
 
 	public SalvarCarregar() {
 		try {
-			aArquivoMundos = new File(URLDecoder.decode(getClass().getResource("/mundos").getFile(), "UTF-8"));
-			aArquivoPersonagens = new File(
-					URLDecoder.decode(getClass().getResource("/personagens").getFile(), "UTF-8"));
-			if (aArquivoMundos.exists()) {
+			if (getClass().getResource("/mundos") != null)
+				aArquivoMundos = new File(URLDecoder.decode(getClass().getResource("/mundos").getFile(), "UTF-8"));
+			if (getClass().getResource("/personagens") != null)
+				aArquivoPersonagens = new File(
+						URLDecoder.decode(getClass().getResource("/personagens").getFile(), "UTF-8"));
+			if (aArquivoMundos != null && aArquivoMundos.exists()) {
 				mundosDisponiveis = listFoldersInFolder(aArquivoMundos);
 
 			} else {
