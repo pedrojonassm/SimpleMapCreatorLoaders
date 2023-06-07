@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import entities.allies.NPC;
 import entities.allies.Player;
+import entities.ia.Astar;
 import files.SalvarCarregar;
 import graficos.Spritesheet;
 import main.SimpleMapLoader;
@@ -166,6 +167,7 @@ public class Entity implements tickRender {
 						y + SimpleMapLoader.TileSize * vertical, z));
 
 				if (sqm_alvo != null) {
+
 					if ((this instanceof Player) ? sqm_alvo.playerSolid() : sqm_alvo.Solid()) {
 						Boolean lSolid = true;
 						if (this instanceof NPC) {
@@ -175,10 +177,26 @@ public class Entity implements tickRender {
 
 						if (lSolid) {
 							sqm_alvo = null;
-							if (aCaminho.size() > 0)
-								aCaminho.clear();
-							minSpriteAnimation = (minSpriteAnimation + maxSpriteAnimation) / 2;
-							maxSpriteAnimation = minSpriteAnimation;
+							if (aCaminho.size() > 0) {
+								aCaminho.remove(0);
+								if (aCaminho.size() > 0) {
+									Tile lTile = World.pegar_chao(x, y, z);
+									ArrayList<Tile> lCoTile = Astar.findPath(lTile, aCaminho.get(0));
+									if (lCoTile != null && lCoTile.size() > 0) {
+										aCaminho.addAll(0, lCoTile);
+										sqm_alvo = aCaminho.get(0);
+									} else {
+										// não é possível chegar em ponto A
+										aCaminho.clear();
+									}
+
+								}
+
+							}
+							if (sqm_alvo == null) {
+								minSpriteAnimation = (minSpriteAnimation + maxSpriteAnimation) / 2;
+								maxSpriteAnimation = minSpriteAnimation;
+							}
 						} else {
 							aExecutarAposMover.add(() -> sqm_alvo.dispararEventoUnico("ProximoConjuntoAoInteragir"));
 						}
