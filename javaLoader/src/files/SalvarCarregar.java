@@ -36,13 +36,15 @@ public class SalvarCarregar {
 
 	public SalvarCarregar() {
 		try {
-			aArquivoMundos = new File(URLDecoder.decode(getClass().getResource("/mundos").getFile(), "UTF-8"));
-			aArquivoPersonagens = new File(
-					URLDecoder.decode(getClass().getResource("/personagens").getFile(), "UTF-8"));
+			if (getClass().getResource("/mundos") != null)
+				aArquivoMundos = new File(URLDecoder.decode(getClass().getResource("/mundos").getFile(), "UTF-8"));
+			if (getClass().getResource("/personagens") != null)
+				aArquivoPersonagens = new File(
+						URLDecoder.decode(getClass().getResource("/personagens").getFile(), "UTF-8"));
 			aArquivosSlides = new File(URLDecoder.decode(getClass().getResource("/slides").getFile(), "UTF-8"));
-			if (aArquivoMundos.exists()) {
+			if (aArquivoMundos != null && aArquivoMundos.exists()) {
 				mundosDisponiveis = listFoldersInFolder(aArquivoMundos);
-				if (aArquivoPersonagens.exists()) {
+				if (aArquivoPersonagens != null && aArquivoPersonagens.exists()) {
 					aAllSprites = listFilesInFolder(aArquivoPersonagens);
 				} else
 					aAllSprites = new ArrayList<>();
