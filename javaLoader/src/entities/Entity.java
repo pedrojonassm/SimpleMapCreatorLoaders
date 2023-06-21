@@ -306,7 +306,7 @@ public class Entity implements tickRender {
 	@Override
 	public void render(Graphics prGraphics) {
 		Tile lTileAcima = World.pegar_chao(x, y, z + 1);
-		if (z == SimpleMapLoader.player.getZ()
+		if (z <= SimpleMapLoader.player.getZ()
 				&& (lTileAcima == null || lTileAcima.getZ() >= World.maxRenderingZ || !lTileAcima.tem_sprites())) {
 			if (sprites == null || spriteADesenhar >= sprites.length) {
 				prGraphics.setColor(Color.WHITE);
