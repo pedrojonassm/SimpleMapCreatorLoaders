@@ -31,8 +31,8 @@ public class Ui implements Tela {
 
 		if (SalvarCarregar.aArquivosSlides.exists()) {
 			File lSlide;
-			aSlides = new BufferedImage[11];
-			for (int i = 1; i <= 11; i++) {
+			aSlides = new BufferedImage[12];
+			for (int i = 1; i <= aSlides.length; i++) {
 				lSlide = new File(SalvarCarregar.aArquivosSlides, "slide-" + i + ".png");
 				if (lSlide.exists())
 					try {
