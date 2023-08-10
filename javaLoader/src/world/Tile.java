@@ -12,8 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import entities.allies.NPC;
 import graficos.ConjuntoSprites;
-import graficos.Ui;
 import graficos.telas.Sprite;
+import graficos.ui.Ui;
 import main.SimpleMapLoader;
 import main.interfaces.tickRender;
 
@@ -382,7 +382,6 @@ public class Tile implements tickRender {
 
 	public void dispararEventos() {
 		for (Entry<String, Object> iEntrySet : aPropriedades.entrySet()) {
-			System.out.println(iEntrySet.getKey() + " = " + iEntrySet.getValue());
 			dispararEventoUnico(iEntrySet.getKey());
 		}
 
@@ -393,6 +392,27 @@ public class Tile implements tickRender {
 		if (getPropriedade("NPC") != null) {
 			SimpleMapLoader.entities.add(new NPC(this, getPropriedade("NPC").toString()));
 		}
+	}
+
+	public String[] getConteudo() {
+		String[] lCoString = null;
+		if (aPropriedades != null) {
+			lCoString = new String[aPropriedades.size() + 1];
+			int i = 1;
+
+			lCoString[0] = "Tile Nro. " + aPos;
+
+			for (Entry<String, Object> iEntrySet : aPropriedades.entrySet()) {
+				lCoString[i] = iEntrySet.getKey() + ": " + iEntrySet.getValue();
+				i++;
+			}
+
+		} else {
+			lCoString = new String[1];
+			lCoString[0] = "Tile Nro. " + aPos;
+		}
+		return lCoString;
+
 	}
 
 }

@@ -3,6 +3,7 @@ package main;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -24,7 +25,7 @@ import entities.Entity;
 import entities.allies.Player;
 import entities.ia.Astar;
 import files.SalvarCarregar;
-import graficos.Ui;
+import graficos.ui.Ui;
 import main.configs.ExConfig;
 import world.Camera;
 import world.Tile;
@@ -172,6 +173,7 @@ public class SimpleMapLoader extends Canvas
 		}
 
 		Graphics g = image.getGraphics();
+		g.setFont(new Font(g.getFont().getName(), g.getFont().getStyle(), 20));
 		g.setColor(new Color(0, 0, 0));
 		g.fillRect(0, 0, windowWidth + TileSize, windowHEIGHT + TileSize);
 		if (World.ready && World.ok) {
@@ -342,10 +344,14 @@ public class SimpleMapLoader extends Canvas
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON2) {
 			int[] teste = Uteis.calcularPosicaoSemAltura(aPos);
-			System.out.println("cx: " + Camera.x + " cy: " + Camera.y);
-			System.out.println("pos: " + aPos);
-			System.out.println("tem tile: " + (lEscolhido != null));
-			System.out.println("tx: " + teste[0] + " ty: " + teste[1] + " tz: " + teste[2] + "\n");
+			if (shift) {
+				System.out.println("cx: " + Camera.x + " cy: " + Camera.y);
+				System.out.println("pos: " + aPos);
+				System.out.println("tem tile: " + (lEscolhido != null));
+				System.out.println("tx: " + teste[0] + " ty: " + teste[1] + " tz: " + teste[2] + "\n");
+			} else
+				ui.botaoJanela(aPos);
+
 			return;
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			if (ui.cliquedireito(e.getX(), e.getY()))

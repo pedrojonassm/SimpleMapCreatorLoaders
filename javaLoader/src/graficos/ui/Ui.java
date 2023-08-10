@@ -1,4 +1,4 @@
-package graficos;
+package graficos.ui;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -23,6 +23,8 @@ public class Ui implements Tela {
 	BufferedImage[] aSlides;
 	private int aSlide;
 
+	private MiniJanela aMiniJanela;
+
 	public Ui() {
 		cliqueUi = false;
 		mostrar = true;
@@ -42,9 +44,15 @@ public class Ui implements Tela {
 					}
 			}
 		}
+		aMiniJanela = new MiniJanela();
 	}
 
 	public void tick() {
+		aMiniJanela.tick();
+	}
+
+	public void botaoJanela(int prPos) {
+		aMiniJanela.ativarDesativarJanela(prPos);
 	}
 
 	public static void renderizarImagemDepois(Graphics prGraphics, BufferedImage image, int prPosX, int prPosY) {
@@ -86,6 +94,8 @@ public class Ui implements Tela {
 		}
 
 		g.setColor(Color.white);
+
+		aMiniJanela.render(g);
 	}
 
 	public void nextSlide(int prNext) {
