@@ -1,0 +1,23 @@
+NPC:
+	"Sebastiao"
+	"Monika"
+
+evento:
+	"CallSebastiao"
+	"DestrancarPorta"
+	"TrancarPorta"
+	"Fujir"
+
+TRANSPORT:
+	"{TYPE=colisao, DESTINY=[2, 0, 1]}"
+	"{TYPE=colisao, DESTINY=[-2, 0, -1]}"
+
+Solid:
+	"true"
+	"ConjuntoNot=0"
+
+monstro:
+	"Zumbi"
+	"Esqueleto"
+	"spawnar"
+
