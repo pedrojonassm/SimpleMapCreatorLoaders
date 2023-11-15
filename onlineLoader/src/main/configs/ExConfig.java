@@ -1,6 +1,6 @@
 package main.configs;
 
-import main.SimpleOnlineLoader;
+import main.SimpleMapLoader;
 
 public class ExConfig {
 
@@ -71,9 +71,9 @@ public class ExConfig {
 	}
 
 	public void atualizarAntesSalvar() {
-		setPlayerX(SimpleOnlineLoader.player.getX());
-		setPlayerY(SimpleOnlineLoader.player.getY());
-		setPlayerZ(SimpleOnlineLoader.player.getZ());
+		setPlayerX(SimpleMapLoader.player.getX());
+		setPlayerY(SimpleMapLoader.player.getY());
+		setPlayerZ(SimpleMapLoader.player.getZ());
 	}
 
 }

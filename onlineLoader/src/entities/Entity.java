@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 import entities.allies.Player;
 import entities.ia.Astar;
-import main.SimpleOnlineLoader;
+import main.SimpleMapLoader;
 import main.Uteis;
 import main.interfaces.tickRender;
 import world.Camera;
@@ -57,7 +57,7 @@ public class Entity implements tickRender {
 				aCaminho.remove(0);
 
 			if (this instanceof Player)
-				SimpleOnlineLoader.player.aPosAtual = SimpleOnlineLoader.player.aPosAlvo;
+				SimpleMapLoader.player.aPosAtual = SimpleMapLoader.player.aPosAlvo;
 
 			sqm_alvo = null;
 		} else if (sqm_alvo == null) {
@@ -74,14 +74,14 @@ public class Entity implements tickRender {
 					vertical = -1;
 
 			} else {
-				if (SimpleOnlineLoader.podeNovaMovimentacao) {
+				if (SimpleMapLoader.podeNovaMovimentacao) {
 					if (left) {
-						if (x - SimpleOnlineLoader.TileSize >= 0)
+						if (x - SimpleMapLoader.TileSize >= 0)
 							horizontal = -1;
 
 					} else if (right) {
 
-						if (x + SimpleOnlineLoader.TileSize < World.WIDTH * SimpleOnlineLoader.TileSize)
+						if (x + SimpleMapLoader.TileSize < World.WIDTH * SimpleMapLoader.TileSize)
 							horizontal = 1;
 
 					} else {
@@ -89,12 +89,12 @@ public class Entity implements tickRender {
 					}
 					if (up) {
 
-						if (y - SimpleOnlineLoader.TileSize >= 0)
+						if (y - SimpleMapLoader.TileSize >= 0)
 							vertical = -1;
 
 					} else if (down) {
 
-						if (y + SimpleOnlineLoader.TileSize < World.HEIGHT * SimpleOnlineLoader.TileSize)
+						if (y + SimpleMapLoader.TileSize < World.HEIGHT * SimpleMapLoader.TileSize)
 							vertical = 1;
 
 					} else {
@@ -111,8 +111,8 @@ public class Entity implements tickRender {
 					vertical *= -1;
 				}
 
-				sqm_alvo = World.pegar_chao(World.calcular_pos(x + SimpleOnlineLoader.TileSize * horizontal,
-						y + SimpleOnlineLoader.TileSize * vertical, z));
+				sqm_alvo = World.pegar_chao(World.calcular_pos(x + SimpleMapLoader.TileSize * horizontal,
+						y + SimpleMapLoader.TileSize * vertical, z));
 
 				if (sqm_alvo != null) {
 					if ((this instanceof Player) ? sqm_alvo.playerSolid() : sqm_alvo.Solid()) {
@@ -138,7 +138,7 @@ public class Entity implements tickRender {
 				}
 
 				if (sqm_alvo != null && this instanceof Player)
-					SimpleOnlineLoader.player.aPosAlvo = sqm_alvo.getaPos();
+					SimpleMapLoader.player.aPosAlvo = sqm_alvo.getaPos();
 
 				if (lInverteuVelocidade) {
 					horizontal *= -1;
@@ -166,7 +166,7 @@ public class Entity implements tickRender {
 
 	private void colidindo_com_escada() {
 
-		Tile lTile = World.pegar_chao(x + SimpleOnlineLoader.TileSize / 2, y + SimpleOnlineLoader.TileSize / 2, z);
+		Tile lTile = World.pegar_chao(x + SimpleMapLoader.TileSize / 2, y + SimpleMapLoader.TileSize / 2, z);
 
 		if (lTile != null && lTile.getPropriedade("TRANSPORT") != null) {
 			@SuppressWarnings("unchecked")
@@ -204,17 +204,17 @@ public class Entity implements tickRender {
 
 			sqm_alvo = lTile;
 			if (this instanceof Player)
-				SimpleOnlineLoader.player.aPosAlvo = sqm_alvo.getaPos();
+				SimpleMapLoader.player.aPosAlvo = sqm_alvo.getaPos();
 		}
 	}
 
 	@Override
 	public void render(Graphics prGraphics) {
 		Tile lTileAcima = World.pegar_chao(x, y, z + 1);
-		if (z == SimpleOnlineLoader.player.getZ()
+		if (z == SimpleMapLoader.player.getZ()
 				&& (lTileAcima == null || lTileAcima.getZ() >= World.maxRenderingZ || !lTileAcima.tem_sprites())) {
 			prGraphics.setColor(Color.WHITE);
-			prGraphics.fillRect(x - Camera.x, y - Camera.y, SimpleOnlineLoader.TileSize, SimpleOnlineLoader.TileSize);
+			prGraphics.fillRect(x - Camera.x, y - Camera.y, SimpleMapLoader.TileSize, SimpleMapLoader.TileSize);
 
 		}
 	}

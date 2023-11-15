@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 import entities.Entity;
 import files.SalvarCarregar;
-import main.SimpleOnlineLoader;
+import main.SimpleMapLoader;
 import main.interfaces.tickRender;
 import world.Camera;
 import world.Tile;
@@ -29,18 +29,18 @@ public class Player extends Entity implements tickRender {
 	}
 
 	public void updateCamera() {
-		Camera.x = Camera.clamp(x - SimpleOnlineLoader.windowWidth / 2, 0,
-				World.WIDTH * SimpleOnlineLoader.TileSize - SimpleOnlineLoader.windowWidth);
-		Camera.y = Camera.clamp(y - SimpleOnlineLoader.windowHEIGHT / 2, 0,
-				World.HEIGHT * SimpleOnlineLoader.TileSize - SimpleOnlineLoader.windowHEIGHT);
+		Camera.x = Camera.clamp(x - SimpleMapLoader.windowWidth / 2, 0,
+				World.WIDTH * SimpleMapLoader.TileSize - SimpleMapLoader.windowWidth);
+		Camera.y = Camera.clamp(y - SimpleMapLoader.windowHEIGHT / 2, 0,
+				World.HEIGHT * SimpleMapLoader.TileSize - SimpleMapLoader.windowHEIGHT);
 	}
 
 	private void colidindoTransporteParaOutroMundo() {
-		Tile lTile = World.pegar_chao(x + SimpleOnlineLoader.TileSize / 2, y + SimpleOnlineLoader.TileSize / 2, z);
+		Tile lTile = World.pegar_chao(x + SimpleMapLoader.TileSize / 2, y + SimpleMapLoader.TileSize / 2, z);
 
 		if (lTile != null && lTile.getPropriedade("ToOtherWorld") != null) {
-			Tile lPosicao = World.pegar_chao(lTile.getX() + SimpleOnlineLoader.TileSize * horizontal * -1,
-					lTile.getY() + SimpleOnlineLoader.TileSize * vertical * -1, lTile.getZ());
+			Tile lPosicao = World.pegar_chao(lTile.getX() + SimpleMapLoader.TileSize * horizontal * -1,
+					lTile.getY() + SimpleMapLoader.TileSize * vertical * -1, lTile.getZ());
 			setX(lPosicao.getX());
 			setY(lPosicao.getY());
 			setZ(lPosicao.getZ());
@@ -57,10 +57,10 @@ public class Player extends Entity implements tickRender {
 			g.setColor(new Color(175, 75, 50, 50));
 			g.fillRect(
 					sqm_alvo.getX() - Camera.x
-							- (sqm_alvo.getZ() - SimpleOnlineLoader.player.getZ()) * SimpleOnlineLoader.TileSize,
+							- (sqm_alvo.getZ() - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize,
 					sqm_alvo.getY() - Camera.y
-							- (sqm_alvo.getZ() - SimpleOnlineLoader.player.getZ()) * SimpleOnlineLoader.TileSize,
-					SimpleOnlineLoader.TileSize, SimpleOnlineLoader.TileSize);
+							- (sqm_alvo.getZ() - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize,
+					SimpleMapLoader.TileSize, SimpleMapLoader.TileSize);
 		}
 
 		if (aCaminho != null) {
@@ -70,10 +70,10 @@ public class Player extends Entity implements tickRender {
 				g.setColor(new Color(175, 75, 50, 80));
 				g.fillRect(
 						iTile.getX() - Camera.x
-								- (iTile.getZ() - SimpleOnlineLoader.player.getZ()) * SimpleOnlineLoader.TileSize,
+								- (iTile.getZ() - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize,
 						iTile.getY() - Camera.y
-								- (iTile.getZ() - SimpleOnlineLoader.player.getZ()) * SimpleOnlineLoader.TileSize,
-						SimpleOnlineLoader.TileSize, SimpleOnlineLoader.TileSize);
+								- (iTile.getZ() - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize,
+						SimpleMapLoader.TileSize, SimpleMapLoader.TileSize);
 			}
 		}
 	}

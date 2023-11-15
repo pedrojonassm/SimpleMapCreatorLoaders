@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import main.SimpleOnlineLoader;
+import main.SimpleMapLoader;
 import world.World;
 
 public class Sprite {
@@ -40,7 +40,7 @@ public class Sprite {
 		if (World.spritesCarregados.containsKey(nome) && World.spritesCarregados.get(nome).length > posicao)
 			return World.spritesCarregados.get(nome)[posicao];
 
-		return new BufferedImage(SimpleOnlineLoader.TileSize, SimpleOnlineLoader.TileSize, BufferedImage.TYPE_INT_RGB);
+		return new BufferedImage(SimpleMapLoader.TileSize, SimpleMapLoader.TileSize, BufferedImage.TYPE_INT_RGB);
 	}
 
 }

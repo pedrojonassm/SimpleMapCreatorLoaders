@@ -16,7 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import main.SimpleOnlineLoader;
+import main.SimpleMapLoader;
 import main.configs.ExConfig;
 import main.configs.ExSpriteSheet;
 import world.Tile;
@@ -74,9 +74,9 @@ public class SalvarCarregar {
 		File lFileworld = new File(World.aArquivo, nameFileWorldconfig);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(lFileworld));
 
-		SimpleOnlineLoader.aConfig.atualizarAntesSalvar();
+		SimpleMapLoader.aConfig.atualizarAntesSalvar();
 
-		writer.write(toJSON(SimpleOnlineLoader.aConfig));
+		writer.write(toJSON(SimpleMapLoader.aConfig));
 		writer.flush();
 		writer.close();
 
@@ -152,7 +152,7 @@ public class SalvarCarregar {
 	}
 
 	public static Tile[] carregarMundo(File prfile) throws Exception {
-		SimpleOnlineLoader.aConfig = carregarConfiguracoesMundo(new File(prfile + "/" + nameFileWorldconfig));
+		SimpleMapLoader.aConfig = carregarConfiguracoesMundo(new File(prfile + "/" + nameFileWorldconfig));
 		BufferedReader reader = new BufferedReader(new FileReader(new File(prfile, nameFileWorld)));
 		String singleLine = null, lFile = "";
 		while ((singleLine = reader.readLine()) != null) {

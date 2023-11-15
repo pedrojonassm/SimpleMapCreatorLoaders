@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import files.SalvarCarregar;
 import graficos.Spritesheet;
-import main.SimpleOnlineLoader;
+import main.SimpleMapLoader;
 import main.Uteis;
 import main.configs.ExConfig;
 import main.configs.ExSpriteSheet;
@@ -37,9 +37,9 @@ public class World {
 
 			if (prFile != null && prFile.exists()) {
 				tiles = SalvarCarregar.carregarMundo(prFile);
-				WIDTH = SimpleOnlineLoader.aConfig.getWorldWidth();
-				HEIGHT = SimpleOnlineLoader.aConfig.getWorldHeight();
-				HIGH = SimpleOnlineLoader.aConfig.getWorldHigh();
+				WIDTH = SimpleMapLoader.aConfig.getWorldWidth();
+				HEIGHT = SimpleMapLoader.aConfig.getWorldHeight();
+				HIGH = SimpleMapLoader.aConfig.getWorldHigh();
 				aArquivo = prFile;
 				ok = true;
 			}
@@ -108,12 +108,12 @@ public class World {
 		int xstart = Camera.x >> log_ts;
 		int ystart = Camera.y >> log_ts;
 
-		int xfinal = xstart + (SimpleOnlineLoader.windowWidth >> log_ts) + 2;
-		int yfinal = ystart + (SimpleOnlineLoader.windowHEIGHT >> log_ts) + 2;
+		int xfinal = xstart + (SimpleMapLoader.windowWidth >> log_ts) + 2;
+		int yfinal = ystart + (SimpleMapLoader.windowHEIGHT >> log_ts) + 2;
 
-		if ((xstart -= (SimpleOnlineLoader.player.getZ() + 1)) < 0)
+		if ((xstart -= (SimpleMapLoader.player.getZ() + 1)) < 0)
 			xstart = 0;
-		if ((ystart -= (SimpleOnlineLoader.player.getZ() + 1)) < 0)
+		if ((ystart -= (SimpleMapLoader.player.getZ() + 1)) < 0)
 			ystart = 0;
 
 		for (int xx = xstart; xx <= xfinal; xx++)
@@ -122,7 +122,7 @@ public class World {
 					continue;
 				}
 
-				Tile lTile = tiles[(xx + (yy * WIDTH)) * HIGH + SimpleOnlineLoader.player.getZ()];
+				Tile lTile = tiles[(xx + (yy * WIDTH)) * HIGH + SimpleMapLoader.player.getZ()];
 				if (lTile != null)
 					lTile.tick();
 			}
@@ -133,12 +133,12 @@ public class World {
 		int xstart = Camera.x >> log_ts;
 		int ystart = Camera.y >> log_ts;
 
-		int xfinal = xstart + (SimpleOnlineLoader.windowWidth >> log_ts) + 2;
-		int yfinal = ystart + (SimpleOnlineLoader.windowHEIGHT >> log_ts) + 2;
+		int xfinal = xstart + (SimpleMapLoader.windowWidth >> log_ts) + 2;
+		int yfinal = ystart + (SimpleMapLoader.windowHEIGHT >> log_ts) + 2;
 
-		if ((xstart -= (SimpleOnlineLoader.player.getZ() + 1)) < 0)
+		if ((xstart -= (SimpleMapLoader.player.getZ() + 1)) < 0)
 			xstart = 0;
-		if ((ystart -= (SimpleOnlineLoader.player.getZ() + 1)) < 0)
+		if ((ystart -= (SimpleMapLoader.player.getZ() + 1)) < 0)
 			ystart = 0;
 
 		Tile lTile;
@@ -146,16 +146,16 @@ public class World {
 
 		boolean lBreak = false;
 
-		for (int xx = SimpleOnlineLoader.player.getX() >> log_ts + 1; xx <= xfinal && !lBreak; xx++)
-			for (int yy = SimpleOnlineLoader.player.getY() >> log_ts + 1; yy <= yfinal && !lBreak; yy++)
-				for (int zz = 1; zz < HIGH - SimpleOnlineLoader.player.getZ() - 1 && !lBreak; zz++) {
+		for (int xx = SimpleMapLoader.player.getX() >> log_ts + 1; xx <= xfinal && !lBreak; xx++)
+			for (int yy = SimpleMapLoader.player.getY() >> log_ts + 1; yy <= yfinal && !lBreak; yy++)
+				for (int zz = 1; zz < HIGH - SimpleMapLoader.player.getZ() - 1 && !lBreak; zz++) {
 					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
 					}
 					lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
 
-					if (lTile != null && lTile.isTileEmCima(SimpleOnlineLoader.player.getX(),
-							SimpleOnlineLoader.player.getY(), SimpleOnlineLoader.player.getZ())) {
+					if (lTile != null && lTile.isTileEmCima(SimpleMapLoader.player.getX(),
+							SimpleMapLoader.player.getY(), SimpleMapLoader.player.getZ())) {
 						maxRenderingZ = lTile.getZ();
 						lBreak = true;
 					}
@@ -171,9 +171,9 @@ public class World {
 					lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
 					if (lTile != null) {
 						lTile.render(g);
-						if (lTile.getaPos() == SimpleOnlineLoader.player.aPosAtual
-								|| lTile.getaPos() == SimpleOnlineLoader.player.aPosAlvo)
-							SimpleOnlineLoader.player.render(g);
+						if (lTile.getaPos() == SimpleMapLoader.player.aPosAtual
+								|| lTile.getaPos() == SimpleMapLoader.player.aPosAlvo)
+							SimpleMapLoader.player.render(g);
 					}
 				}
 				if (renderizarDepois.get(xx) != null && renderizarDepois.get(xx).get(yy) != null) {
@@ -199,9 +199,9 @@ public class World {
 
 	public static void novo_mundo(File file) {
 		ready = false;
-		SimpleOnlineLoader.aConfig = new ExConfig();
-		SimpleOnlineLoader.world = new World(file);
-		SimpleOnlineLoader.instance.startGerador();
+		SimpleMapLoader.aConfig = new ExConfig();
+		SimpleMapLoader.world = new World(file);
+		SimpleMapLoader.instance.startGerador();
 	}
 
 	public static void carregar_mundo(String prNomeMundo) {
