@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import main.SimpleOnlineLoader;
+import main.SimpleMapLoader;
 import world.Tile;
 import world.World;
 
@@ -104,8 +104,8 @@ public class Astar {
 					x = current.tile.x;
 					y = current.tile.y;
 					z = current.tile.z;
-					tile = World.pegar_chao(x + horizontal * SimpleOnlineLoader.TileSize,
-							y + vertical * SimpleOnlineLoader.TileSize, z);
+					tile = World.pegar_chao(x + horizontal * SimpleMapLoader.TileSize,
+							y + vertical * SimpleMapLoader.TileSize, z);
 					if (tile == null || ((!isPlayer && !tileEqualsVector(end, tile) && tile.Solid())
 							|| (isPlayer && !tileEqualsVector(end, tile) && tile.playerSolid()))) {
 						continue;

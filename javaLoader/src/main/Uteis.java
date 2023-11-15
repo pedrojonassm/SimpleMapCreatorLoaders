@@ -25,15 +25,15 @@ public class Uteis {
 
 	public static int[] calcularPosicaoSemAltura(int prPos) {
 		int[] retorno = { 0, 0, 0 };
-		retorno[0] = (int) ((prPos % (World.WIDTH * World.HIGH)) / World.HIGH) * SimpleOnlineLoader.TileSize - Camera.x;
-		retorno[1] = (int) (prPos / World.HEIGHT / World.HIGH) * SimpleOnlineLoader.TileSize - Camera.y;
+		retorno[0] = (int) ((prPos % (World.WIDTH * World.HIGH)) / World.HIGH) * SimpleMapLoader.TileSize - Camera.x;
+		retorno[1] = (int) (prPos / World.HEIGHT / World.HIGH) * SimpleMapLoader.TileSize - Camera.y;
 		retorno[2] = (prPos % World.HIGH);
 		return retorno;
 	}
 
 	public static int[] calcularPosicaoComAltura(int prPos) {
 		int[] retorno = calcularPosicaoSemAltura(prPos);
-		int lSubtract = (prPos % World.HIGH) * SimpleOnlineLoader.TileSize;
+		int lSubtract = (prPos % World.HIGH) * SimpleMapLoader.TileSize;
 		retorno[0] -= lSubtract;
 		retorno[1] -= lSubtract;
 		return retorno;

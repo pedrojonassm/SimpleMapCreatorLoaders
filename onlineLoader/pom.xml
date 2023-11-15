@@ -5,4 +5,15 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>onlineLoader</name>
   <description>Loader do SimpleMapCreator para criações de jogos multiplayer</description>
+  
+  <dependencies>
+	
+	<!-- From/To Json -->
+	<dependency>
+	    <groupId>com.google.code.gson</groupId>
+	    <artifactId>gson</artifactId>
+	    <version>2.10.1</version>
+	</dependency>
+	
+  </dependencies>	  
 </project>

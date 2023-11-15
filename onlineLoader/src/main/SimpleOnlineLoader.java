@@ -30,7 +30,7 @@ import world.Camera;
 import world.Tile;
 import world.World;
 
-public class SimpleOnlineLoader extends Canvas
+public class SimpleMapLoader extends Canvas
 		implements Runnable, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
 	private static final long serialVersionUID = 1L;
@@ -57,11 +57,11 @@ public class SimpleOnlineLoader extends Canvas
 
 	public static ExConfig aConfig;
 
-	public static SimpleOnlineLoader instance;
+	public static SimpleMapLoader instance;
 
 	public static boolean podeNovaMovimentacao;
 
-	public SimpleOnlineLoader() {
+	public SimpleMapLoader() {
 		instance = this;
 		arcoInicial = arcoFinal = 0;
 		aConfig = new ExConfig();
@@ -79,7 +79,7 @@ public class SimpleOnlineLoader extends Canvas
 	public void startGerador() {
 		TileSize = aConfig.getTileSize();
 		player = new Player(aConfig.getPlayerX(), aConfig.getPlayerY(), 0);
-		World.log_ts = Uteis.log(SimpleOnlineLoader.TileSize, 2);
+		World.log_ts = Uteis.log(SimpleMapLoader.TileSize, 2);
 		ui = new Ui();
 		World.carregarSprites();
 		control = shift = clique_no_mapa = false;
@@ -132,7 +132,7 @@ public class SimpleOnlineLoader extends Canvas
 	}
 
 	public static void main(String args[]) {
-		SimpleOnlineLoader gerador = new SimpleOnlineLoader();
+		SimpleMapLoader gerador = new SimpleMapLoader();
 		if (World.ok)
 			gerador.start();
 	}

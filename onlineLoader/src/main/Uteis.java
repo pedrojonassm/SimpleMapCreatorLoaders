@@ -38,5 +38,20 @@ public class Uteis {
 		retorno[1] -= lSubtract;
 		return retorno;
 	}
+	
+	public static String toJSONFast(final Object prObject) {
+        String lResult = "";
+
+        Gson gson = new GsonBuilder().create();
+
+        lResult = gson.toJson(prObject);
+
+        return lResult;
+    }
+
+    public static <T> T fromJSONFast(final String prJSON, Class<T> prClass) {
+        T obj = new Gson().fromJson(prJSON, prClass);
+        return obj;
+    }
 
 }

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import graficos.telas.Sprite;
-import main.SimpleOnlineLoader;
+import main.SimpleMapLoader;
 import world.World;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -16,7 +16,7 @@ public class ConjuntoSprites {
 	public ConjuntoSprites() {
 		sprites = new ArrayList<ArrayList<Sprite>>();
 
-		for (int i = 0; i < SimpleOnlineLoader.aConfig.getTotalLayers(); i++) {
+		for (int i = 0; i < SimpleMapLoader.aConfig.getTotalLayers(); i++) {
 			sprites.add(new ArrayList<Sprite>());
 		}
 

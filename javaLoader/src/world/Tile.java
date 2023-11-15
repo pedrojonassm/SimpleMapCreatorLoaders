@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import graficos.ConjuntoSprites;
 import graficos.Ui;
 import graficos.telas.Sprite;
-import main.SimpleOnlineLoader;
+import main.SimpleMapLoader;
 import main.interfaces.tickRender;
 
 public class Tile implements tickRender {
@@ -97,18 +97,18 @@ public class Tile implements tickRender {
 					}
 				}
 
-			if (maxWidth > SimpleOnlineLoader.TileSize || maxHeight > SimpleOnlineLoader.TileSize) {
-				dx = x - SimpleOnlineLoader.TileSize * ((maxWidth / SimpleOnlineLoader.TileSize) - 1);
-				dy = y - SimpleOnlineLoader.TileSize * ((maxHeight / SimpleOnlineLoader.TileSize) - 1);
+			if (maxWidth > SimpleMapLoader.TileSize || maxHeight > SimpleMapLoader.TileSize) {
+				dx = x - SimpleMapLoader.TileSize * ((maxWidth / SimpleMapLoader.TileSize) - 1);
+				dy = y - SimpleMapLoader.TileSize * ((maxHeight / SimpleMapLoader.TileSize) - 1);
 			} else {
 				dx = x;
 				dy = y;
 			}
-			dx -= (z - prZ) * SimpleOnlineLoader.TileSize;
-			dy -= (z - prZ) * SimpleOnlineLoader.TileSize;
+			dx -= (z - prZ) * SimpleMapLoader.TileSize;
+			dy -= (z - prZ) * SimpleMapLoader.TileSize;
 
-			if (new Rectangle(dx, dy, maxWidth, maxHeight).intersects(new Rectangle(SimpleOnlineLoader.player.getX(),
-					SimpleOnlineLoader.player.getY(), SimpleOnlineLoader.TileSize, SimpleOnlineLoader.TileSize)))
+			if (new Rectangle(dx, dy, maxWidth, maxHeight).intersects(new Rectangle(SimpleMapLoader.player.getX(),
+					SimpleMapLoader.player.getY(), SimpleMapLoader.TileSize, SimpleMapLoader.TileSize)))
 				return true;
 
 		}
@@ -119,7 +119,7 @@ public class Tile implements tickRender {
 	private boolean temTileAcima() {
 		Tile lTile;
 		for (int zz = z + 1; zz < World.maxRenderingZ; zz++) {
-			lTile = World.pegar_chao(x + SimpleOnlineLoader.TileSize * (zz - z), y + SimpleOnlineLoader.TileSize * (zz - z),
+			lTile = World.pegar_chao(x + SimpleMapLoader.TileSize * (zz - z), y + SimpleMapLoader.TileSize * (zz - z),
 					zz);
 			if (lTile != null && lTile.isTileEmCima(x, y, z))
 				return true;
@@ -137,16 +137,16 @@ public class Tile implements tickRender {
 					Sprite sprite = imagens.get(World.tiles_index % imagens.size());
 					int dx, dy;
 					BufferedImage image = sprite.pegarImagem();
-					if (image.getWidth() > SimpleOnlineLoader.TileSize || image.getHeight() > SimpleOnlineLoader.TileSize) {
-						dx = x - Camera.x - SimpleOnlineLoader.TileSize;
-						dy = y - Camera.y - SimpleOnlineLoader.TileSize;
+					if (image.getWidth() > SimpleMapLoader.TileSize || image.getHeight() > SimpleMapLoader.TileSize) {
+						dx = x - Camera.x - SimpleMapLoader.TileSize;
+						dy = y - Camera.y - SimpleMapLoader.TileSize;
 					} else {
 						dx = x - Camera.x;
 						dy = y - Camera.y;
 					}
-					dx -= (z - SimpleOnlineLoader.player.getZ()) * SimpleOnlineLoader.TileSize;
-					dy -= (z - SimpleOnlineLoader.player.getZ()) * SimpleOnlineLoader.TileSize;
-					if (z == SimpleOnlineLoader.player.getZ() && !temTileAcima()) {
+					dx -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
+					dy -= (z - SimpleMapLoader.player.getZ()) * SimpleMapLoader.TileSize;
+					if (z == SimpleMapLoader.player.getZ() && !temTileAcima()) {
 						if (getPropriedade("renderLayerPosWorldRender") != null
 								&& getPropriedade("renderLayerPosWorldRender").toString()
 										.contentEquals((iLayer + 1) + ""))
