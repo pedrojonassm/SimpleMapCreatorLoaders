@@ -38,5 +38,9 @@ public class Uteis {
 		retorno[1] -= lSubtract;
 		return retorno;
 	}
+	
+	public static boolean isEnumValueValid(Integer lValue, Class prEnum) {
+        return lValue != null && prEnum.isEnum() && lValue >= 0 && lValue < prEnum.getEnumConstants().length;
+    }
 
 }
