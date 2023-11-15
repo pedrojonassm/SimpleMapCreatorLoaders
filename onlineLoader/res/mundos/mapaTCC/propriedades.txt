@@ -1,0 +1,73 @@
+NPC:
+	"Silvester"
+	"Natalia"
+	"Sebastiao"
+	"Monika"
+	"Bruno"
+	"Nami"
+	"Nhonho"
+	"Romeo"
+	"Julieta"
+	"Florinda"
+	"Jirafalis"
+	"Ze"
+	"Chica"
+
+Speed:
+	"8"
+	"13"
+
+ProximoConjuntoAoInteragir:
+	"1"
+
+trocarConjuntoDeTempo:
+	"120"
+	"20"
+	"30"
+	"40"
+	"180"
+	"15"
+
+TRANSPORT:
+	"{TYPE=colisao, DESTINY=[2, 0, 1]}"
+	"{TYPE=colisao, DESTINY=[-2, 0, -1]}"
+	"{TYPE=colisao, DESTINY=[0, -1, 1]}"
+	"{TYPE=colisao, DESTINY=[0, 1, -1]}"
+	"{TYPE=colisao, DESTINY=[-1, 0, 1]}"
+	"{TYPE=colisao, DESTINY=[1, 0, -1]}"
+	"{TYPE=colisao, DESTINY=[0, 2, 1]}"
+	"{TYPE=colisao, DESTINY=[1, -1, -1]}"
+
+TrocarConjuntoAoInteragirPara:
+	"0"
+
+ProximoConjuntoAleatorio:
+	"true"
+	"1"
+
+renderLayerPosWorldRenderVertical:
+	"3"
+
+renderLayerPosWorldRenderHorizontal:
+	"3"
+	"4"
+
+TrocarConjuntoDePara:
+	"1150=1"
+	"1170=1"
+	"2550=1"
+	"2350=1"
+	"2370=1"
+	"3550=1"
+	"3570=1"
+	"4750=1"
+	"4770=1"
+
+Solid:
+	"true"
+	"True"
+	"ConjuntoNot=0"
+
+portaNPC:
+	"true"
+
