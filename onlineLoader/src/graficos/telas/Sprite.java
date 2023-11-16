@@ -8,39 +8,38 @@ import main.OnlineMapLoader;
 import world.World;
 
 public class Sprite {
-	private String nome;
-	private int posicao;
+    private String nome;
+    private int posicao;
 
-	public Sprite() {
-	}
+    public Sprite() {
+    }
 
-	public Sprite(@JsonProperty("nome") String prNome, @JsonProperty("posicao") int prPosicao) {
-		nome = prNome;
-		posicao = prPosicao;
+    public Sprite(@JsonProperty("nome") String prNome, @JsonProperty("posicao") int prPosicao) {
+        nome = prNome;
+        posicao = prPosicao;
+    }
 
-	}
+    public String getNome() {
+        return nome;
+    }
 
-	public String getNome() {
-		return nome;
-	}
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+    public int getPosicao() {
+        return posicao;
+    }
 
-	public int getPosicao() {
-		return posicao;
-	}
+    public void setPosicao(int posicao) {
+        this.posicao = posicao;
+    }
 
-	public void setPosicao(int posicao) {
-		this.posicao = posicao;
-	}
+    public BufferedImage pegarImagem() {
+        if (World.spritesCarregados.containsKey(nome) && World.spritesCarregados.get(nome).length > posicao)
+            return World.spritesCarregados.get(nome)[posicao];
 
-	public BufferedImage pegarImagem() {
-		if (World.spritesCarregados.containsKey(nome) && World.spritesCarregados.get(nome).length > posicao)
-			return World.spritesCarregados.get(nome)[posicao];
-
-		return new BufferedImage(OnlineMapLoader.TileSize, OnlineMapLoader.TileSize, BufferedImage.TYPE_INT_RGB);
-	}
+        return new BufferedImage(OnlineMapLoader.TileSize, OnlineMapLoader.TileSize, BufferedImage.TYPE_INT_RGB);
+    }
 
 }
