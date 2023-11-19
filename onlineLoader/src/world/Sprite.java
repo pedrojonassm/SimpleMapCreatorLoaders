@@ -1,11 +1,10 @@
-package graficos.telas;
+package world;
 
 import java.awt.image.BufferedImage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import main.OnlineMapLoader;
-import world.World;
 
 public class Sprite {
     private String nome;

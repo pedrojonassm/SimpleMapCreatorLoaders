@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import graficos.ConjuntoSprites;
 import graficos.Ui;
-import graficos.telas.Sprite;
 import main.OnlineMapLoader;
 import main.interfaces.tickRender;
 

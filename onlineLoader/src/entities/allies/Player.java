@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import entities.Entity;
 import main.OnlineMapLoader;
 import main.interfaces.tickRender;
+import online.client.entities.ExEntity;
 import online.servidor.Server.KDOqFoiEnviado;
 import world.Camera;
 import world.Tile;
@@ -27,6 +28,14 @@ public class Player extends Entity implements tickRender {
         updateCamera();
         if (x != lX || lY != y || lZ != z)
             sendTToServer(KDOqFoiEnviado.kdAtualizarPlayer);
+    }
+
+    public void entrarNoServidor(ExEntity prEntity) {
+        aExEntity = prEntity;
+        x = aExEntity.getX();
+        y = aExEntity.getY();
+        z = aExEntity.getZ();
+        OnlineMapLoader.aIsOnline = true;
     }
 
     public void updateCamera() {

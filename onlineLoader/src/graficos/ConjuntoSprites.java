@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import graficos.telas.Sprite;
 import main.OnlineMapLoader;
+import world.Sprite;
 import world.World;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

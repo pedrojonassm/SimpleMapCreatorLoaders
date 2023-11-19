@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
@@ -20,18 +21,18 @@ import world.World;
 public class Server implements Runnable {
 
     public enum KDOqFoiEnviado {
-        kdConectar, kdDesconectar, kdAtualizarPlayer
+        kdConectar, kdDesconectar, kdAtualizarPlayer, kdFecharServidor
     }
 
     private static Server server;
-    static ServerSocket serverSocket;
+    static ServerSocket aServerSocket;
     public Socket socket;
     public DataOutputStream out;
     public DataInputStream in;
     public static int port;
     public static ServerConnection[] playersConectados;
     public static ArrayList<ServerConnection> filaEspera;
-    public static int jogadores_conectados = -1, maximoJogadores = -1;
+    public static int jogadores_conectados = 0, maximoJogadores = -1;
     private static final String txt_port = "porta", txt_players = "total de jogadores", splitter = ": ";
     public static World world;
     Boolean aIsServerRunning;
@@ -85,7 +86,11 @@ public class Server implements Runnable {
         }
     }
 
-    private void hostear(int prMaximoJogadores, int prPorta) {
+    public static boolean isClosed() {
+        return aServerSocket.isClosed();
+    }
+
+    public void hostear(int prMaximoJogadores, int prPorta) {
         maximoJogadores = prMaximoJogadores;
         port = prPorta;
         playersConectados = new ServerConnection[maximoJogadores];
@@ -95,10 +100,10 @@ public class Server implements Runnable {
         lThread.start();
     }
 
-    private static boolean tem_letras(String text) {
+    private static boolean tem_letras(String prTexto) {
         char[] numeros = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
         boolean tem = false;
-        for (char c : text.toCharArray()) {
+        for (char c : prTexto.toCharArray()) {
             for (char n : numeros) {
                 if (n == c) {
                     // verifica se o caractere um n mero
@@ -138,13 +143,13 @@ public class Server implements Runnable {
     @Override
     public void run() {
         try {
-            serverSocket = new ServerSocket(port);
+            aServerSocket = new ServerSocket(port);
             while (aIsServerRunning) {
                 try {
-                    socket = serverSocket.accept();
+                    socket = aServerSocket.accept();
                     out = new DataOutputStream(socket.getOutputStream());
                     in = new DataInputStream(socket.getInputStream());
-                    System.out.println("Conexão feita com: " + socket.getInetAddress());
+                    // System.out.println("Conexão feita com: " + socket.getInetAddress());
                     ServerConnection novo = new ServerConnection(out, in);
                     filaEspera.add(novo);
                     Thread thread = new Thread(novo);
@@ -159,15 +164,43 @@ public class Server implements Runnable {
         }
     }
 
-    public static void sendToEveryOneExceptMe(KDOqFoiEnviado prOqFoiEnviado, Object prConteudo, Integer prMe) {
-        String lConteudo = SalvarCarregar.toJSON(prConteudo);
-        sendToEveryOneExceptMe(prOqFoiEnviado, lConteudo.getBytes(), prMe);
+    public void fecharServidor() {
+        sendActionToEveryOneExceptMe(KDOqFoiEnviado.kdFecharServidor, null);
+        aIsServerRunning = false;
+        try {
+            if (!aServerSocket.isClosed())
+                aServerSocket.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void sendToEveryOneExceptMe(KDOqFoiEnviado prOqFoiEnviado, byte[] prConteudo, Integer prMe) {
+    public static void sendObjectToEveryOneExceptMe(KDOqFoiEnviado prOqFoiEnviado, Object prConteudo, Integer prMe) {
+        String lConteudo = SalvarCarregar.toJSON(prConteudo);
+        sendByteArrayToEveryOneExceptMe(prOqFoiEnviado, lConteudo.getBytes(StandardCharsets.UTF_8), prMe);
+    }
+
+    public static void sendByteArrayToEveryOneExceptMe(KDOqFoiEnviado prOqFoiEnviado, byte[] prConteudo, Integer prMe) {
         for (ServerConnection iServerConnection : playersConectados) {
-            if (prMe == null || (iServerConnection != null && iServerConnection.getPlayerid() != prMe)) {
-                iServerConnection.send(prOqFoiEnviado, prConteudo);
+            if (iServerConnection != null && (prMe == null || iServerConnection.getPlayerid() != prMe)) {
+                iServerConnection.sendByteArray(prOqFoiEnviado, prConteudo);
+            }
+        }
+    }
+
+    public static void sendIntToEveryOneExceptMe(KDOqFoiEnviado prOqFoiEnviado, Integer prConteudo, Integer prMe) {
+        for (ServerConnection iServerConnection : playersConectados) {
+            if (iServerConnection != null && (prMe == null || iServerConnection.getPlayerid() != prMe)) {
+                iServerConnection.sendInt(prOqFoiEnviado, prConteudo);
+            }
+        }
+    }
+
+    public static void sendActionToEveryOneExceptMe(KDOqFoiEnviado prOqFoiEnviado, Integer prMe) {
+        for (ServerConnection iServerConnection : playersConectados) {
+            if (iServerConnection != null && iServerConnection.getPlayerid() != prMe) {
+                iServerConnection.sendAction(prOqFoiEnviado);
             }
         }
     }

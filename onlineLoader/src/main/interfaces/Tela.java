@@ -1,6 +1,4 @@
-package graficos.telas;
-
-import main.interfaces.tickRender;
+package main.interfaces;
 
 public interface Tela extends tickRender {
     public boolean clicou(int x, int y);
@@ -8,4 +6,6 @@ public interface Tela extends tickRender {
     public boolean cliquedireito(int x, int y);
 
     public boolean trocar_pagina(int x, int y, int prRodinha);
+
+    public boolean interagivelAgora();
 }

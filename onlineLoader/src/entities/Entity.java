@@ -69,6 +69,7 @@ public class Entity implements tickRender {
 
     public void definirIdentificadorServidor(int prIdentificador) {
         aExEntity.setIdentificadorServidor(prIdentificador);
+        OnlineMapLoader.aIsOnline = true;
     }
 
     protected void encerrarMovimentacaoSQM() {

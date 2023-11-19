@@ -1,13 +1,20 @@
 package online.client.entities;
 
 import entities.Entity;
+import main.OnlineMapLoader;
 
 public class ExEntity {
     private int x;
     private int y;
     private int z;
 
-    private int identificadorServidor;
+    private Integer identificadorServidor;
+
+    public ExEntity() {
+        x = OnlineMapLoader.aConfig.getPlayerX() - 128;
+        y = OnlineMapLoader.aConfig.getPlayerY();
+        z = OnlineMapLoader.aConfig.getPlayerZ();
+    }
 
     public int getX() {
         return x;
@@ -33,11 +40,11 @@ public class ExEntity {
         this.z = z;
     }
 
-    public int getIdentificadorServidor() {
+    public Integer getIdentificadorServidor() {
         return identificadorServidor;
     }
 
-    public void setIdentificadorServidor(int identificadorServidor) {
+    public void setIdentificadorServidor(Integer identificadorServidor) {
         this.identificadorServidor = identificadorServidor;
     }
 

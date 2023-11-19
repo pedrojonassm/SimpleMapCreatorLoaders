@@ -5,12 +5,15 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import graficos.telas.Tela;
+import graficos.telas.TelaSelecionarServidor;
+import main.interfaces.Tela;
 
 public class Ui implements Tela {
     public static boolean mostrar;
 
     private static ArrayList<Runnable> renderizarDepois;
+
+    public static ArrayList<Tela> aCoTelas;
 
     public boolean cliqueUi;
 
@@ -18,9 +21,16 @@ public class Ui implements Tela {
         cliqueUi = false;
         mostrar = true;
         renderizarDepois = new ArrayList<>();
+        aCoTelas = new ArrayList<>();
+        aCoTelas.add(new TelaSelecionarServidor());
     }
 
     public void tick() {
+        if (mostrar)
+            for (Tela iTela : aCoTelas) {
+                if (iTela.interagivelAgora())
+                    iTela.tick();
+            }
     }
 
     public static void renderizarImagemDepois(Graphics prGraphics, BufferedImage image, int prPosX, int prPosY) {
@@ -56,6 +66,12 @@ public class Ui implements Tela {
             renderizarDepois.clear();
         }
 
+        if (mostrar)
+            for (Tela iTela : aCoTelas) {
+                if (iTela.interagivelAgora())
+                    iTela.render(g);
+            }
+
         g.setColor(Color.white);
     }
 
@@ -63,22 +79,41 @@ public class Ui implements Tela {
         if (!mostrar)
             return false;
 
+        for (Tela iTela : aCoTelas) {
+            if (iTela.interagivelAgora())
+                iTela.clicou(x, y);
+        }
+
         return false;
     }
 
     public boolean cliquedireito(int x, int y) {
-        if (mostrar) {
+        if (!mostrar)
+            return false;
 
+        for (Tela iTela : aCoTelas) {
+            if (iTela.interagivelAgora())
+                iTela.cliquedireito(x, y);
         }
 
         return false;
     }
 
     public boolean trocar_pagina(int x, int y, int prRodinha) {
-        if (mostrar) {
+        if (!mostrar)
+            return false;
 
+        for (Tela iTela : aCoTelas) {
+            if (iTela.interagivelAgora())
+                iTela.trocar_pagina(x, y, prRodinha);
         }
+
         return false;
+    }
+
+    @Override
+    public boolean interagivelAgora() {
+        return true;
     }
 
 }

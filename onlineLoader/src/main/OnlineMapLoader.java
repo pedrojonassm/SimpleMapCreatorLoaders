@@ -3,6 +3,7 @@ package main;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -13,6 +14,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -28,7 +31,7 @@ import graficos.Ui;
 import main.configs.ExConfig;
 import online.client.ClientConnection;
 import online.client.entities.ExEntity;
-import online.servidor.Server.KDOqFoiEnviado;
+import online.servidor.Server;
 import world.Camera;
 import world.Tile;
 import world.World;
@@ -49,6 +52,7 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
     public SalvarCarregar memoria;
 
     private int aPos, aPosOld, aCliqueMouse;
+    public int aMouseX, aMouseY;
 
     private boolean clique_no_mapa;
     private int arcoInicial, arcoFinal;
@@ -67,43 +71,27 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
 
     public static Boolean aIsConectado, aIsOnline;
 
+    public Font aFonte;
+
+    public static Server aServer = null;
+
     public OnlineMapLoader() {
         instance = this;
         arcoInicial = arcoFinal = 0;
-        aIsConectado = false;
+        aIsConectado = aIsOnline = false;
         aConfig = new ExConfig();
         memoria = new SalvarCarregar();
         world = new World(null);
         podeNovaMovimentacao = true;
+        aFonte = new Font("arial", Font.PLAIN, 20);
         if (World.ok) {
             entities = new ArrayList<>();
             startGerador();
             initFrame();
             aClientConnection = new ClientConnection();
-            if (conectar("localhost", 7777))// TODO Retirar daqui
-                logar();
 
         }
 
-    }
-
-    private boolean conectar(String prIp, int prPorta) {
-        try {
-            aClientConnection.conectar(prIp, prPorta);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        aIsConectado = true;
-        return true;
-    }
-
-    private void logar() {
-        if (aIsConectado) {
-            Thread lThread = new Thread(aClientConnection);
-            lThread.start();
-            ClientConnection.send(KDOqFoiEnviado.kdConectar);
-        }
     }
 
     public void startGerador() {
@@ -126,9 +114,6 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                // TODO é bem feito, vai ter que reposicionar alguns quadrados unicamente, e
-                // resto acreito que irá funcionar
-                // mas faça isso depois. E lembre-se do frame.setResizable(false);
 
                 windowWidth = e.getComponent().getWidth();
                 windowHEIGHT = e.getComponent().getHeight();
@@ -136,8 +121,19 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
                 super.componentResized(e);
             }
         });
+
         frame = new JFrame("java Loader");
         setPreferredSize(new Dimension(windowWidth, windowHEIGHT));
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (aServer != null) {
+                    aServer.fecharServidor();
+                }
+
+                super.windowClosing(e);
+            }
+        });
         frame.add(this);
         frame.setResizable(false);
         frame.pack();
@@ -193,7 +189,7 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
         ui.tick();
     }
 
-    public static void atualizarEntidade(ExEntity prExEntity) {
+    public static void atualizarOuInserirEntidade(ExEntity prExEntity) {
         Boolean lAtualizou = false;
 
         for (Entity iEntity : entities) {
@@ -213,6 +209,16 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
 
     }
 
+    public static void retirarEntidade(int prIdentificador) {
+        for (int i = 0; i < entities.size(); i++) {
+            Entity iEntity = entities.get(i);
+            if (iEntity.getIdentificadorServidor() == prIdentificador) {
+                entities.remove(iEntity);
+                break;
+            }
+        }
+    }
+
     public void render() {
         BufferStrategy bs = this.getBufferStrategy();
         if (bs == null) {
@@ -221,9 +227,10 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
         }
 
         Graphics g = image.getGraphics();
+        g.setFont(aFonte);
         g.setColor(new Color(0, 0, 0));
         g.fillRect(0, 0, windowWidth + TileSize, windowHEIGHT + TileSize);
-        if (World.ready && World.ok) {
+        if (World.ready && World.ok && aIsOnline) {
             world.render(g);
 
             g.setColor(Color.red);
@@ -234,8 +241,7 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
 
             if (player.aPosAtual < 0 || World.tiles[player.aPosAtual] == null)
                 player.render(g);
-            ui.render(g);
-        } else {
+        } else if (aIsConectado) {
             g.setColor(Color.white);
             arcoInicial += 5;
             if (arcoInicial >= 360) {
@@ -248,6 +254,7 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
 
             g.drawArc(windowWidth / 2 - TileSize / 2, windowHEIGHT / 2 - TileSize / 2, TileSize, TileSize, arcoInicial, arcoFinal);
         }
+        ui.render(g);
         g.dispose();
         g = bs.getDrawGraphics();
         g.drawImage(image, 0, 0, windowWidth, windowHEIGHT, null);
@@ -357,9 +364,11 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
 
     @Override
     public void mousePressed(MouseEvent e) {
+        aMouseX = e.getX();
+        aMouseY = e.getY();
         Tile lEscolhido = World.tiles[aPos];
         if (e.getButton() == MouseEvent.BUTTON1) {
-            if (!Ui.mostrar || !ui.clicou(e.getX(), e.getY())) {
+            if ((!Ui.mostrar || !ui.clicou(e.getX(), e.getY())) && aIsOnline) {
                 clique_no_mapa = true;
                 aCliqueMouse = 1;
                 aTrocouPosicao = true;
@@ -377,7 +386,7 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
             System.out.println("tx: " + teste[0] + " ty: " + teste[1] + " tz: " + teste[2] + "\n");
             return;
         } else if (e.getButton() == MouseEvent.BUTTON3) {
-            if (ui.cliquedireito(e.getX(), e.getY()))
+            if (ui.cliquedireito(e.getX(), e.getY()) || !aIsOnline)
                 return;
             else {
                 Tile lTile = World.tiles[aPos];
@@ -398,6 +407,8 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        aMouseX = e.getX();
+        aMouseY = e.getY();
         clique_no_mapa = false;
         if (e.getButton() == MouseEvent.BUTTON1)
             ui.cliqueUi = false;
@@ -405,6 +416,8 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        aMouseX = e.getX();
+        aMouseY = e.getY();
         aPos = World.calcular_pos(e.getX() + Camera.x, e.getY() + Camera.y, player.getZ());
         if (aPosOld != aPos) {
             aPosOld = aPos;
@@ -414,6 +427,8 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        aMouseX = e.getX();
+        aMouseY = e.getY();
         aPos = World.calcular_pos(e.getX() + Camera.x, e.getY() + Camera.y, player.getZ());
         if (aPosOld != aPos) {
             aPosOld = aPos;
@@ -423,7 +438,9 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        if (ui.trocar_pagina(e.getX(), e.getY(), (e.getWheelRotation() > 0) ? 1 : -1))
+        aMouseX = e.getX();
+        aMouseY = e.getY();
+        if (ui.trocar_pagina(e.getX(), e.getY(), (e.getWheelRotation() > 0) ? 1 : -1) || !aIsOnline)
             return;
         else {
             if (control) {

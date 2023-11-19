@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 import files.SalvarCarregar;
 import main.OnlineMapLoader;
@@ -20,29 +21,26 @@ public class ClientConnection implements Runnable {
         socket = new Socket(prIp, prPorta);
         in = new DataInputStream(socket.getInputStream());
         out = new DataOutputStream(socket.getOutputStream());
+
     }
 
     public static void send(KDOqFoiEnviado prKDOqFoiEnviado, Object prEnvio) {
-        if (prKDOqFoiEnviado == null || prEnvio == null)
+        if (prKDOqFoiEnviado == null || out == null)
             return;
         try {
-            String lConteudo = SalvarCarregar.toJSON(prEnvio);
             out.writeInt(prKDOqFoiEnviado.ordinal());
-            out.writeInt(lConteudo.getBytes().length);
-            out.write(lConteudo.getBytes());
+            if (prEnvio != null) {
+                String lConteudo = SalvarCarregar.toJSON(prEnvio);
+                out.writeInt(lConteudo.getBytes(StandardCharsets.UTF_8).length);
+                out.write(lConteudo.getBytes(StandardCharsets.UTF_8));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public static void send(KDOqFoiEnviado prKDOqFoiEnviado) {
-        if (prKDOqFoiEnviado == null)
-            return;
-        try {
-            out.writeInt(prKDOqFoiEnviado.ordinal());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        send(prKDOqFoiEnviado, null);
     }
 
     @Override
@@ -63,18 +61,33 @@ public class ClientConnection implements Runnable {
                 switch (lKDOqFoiEnviado) {
                 case kdConectar:
                     if (in.readBoolean()) {
-                        OnlineMapLoader.player.definirIdentificadorServidor(in.readInt());
+                        lDados = new byte[in.readInt()];
+                        in.read(lDados);
+                        lDadosStr = new String(lDados, StandardCharsets.UTF_8);
+                        OnlineMapLoader.player.entrarNoServidor((ExEntity) SalvarCarregar.fromJson(lDadosStr, ExEntity.class));
+
                     }
                     break;
                 case kdDesconectar:
+                    OnlineMapLoader.retirarEntidade(in.readInt());
                     break;
 
                 case kdAtualizarPlayer:
                     lDados = new byte[in.readInt()];
                     in.read(lDados);
-                    lDadosStr = new String(lDados);
-                    OnlineMapLoader.atualizarEntidade((ExEntity) SalvarCarregar.fromJson(lDadosStr, ExEntity.class));
+                    lDadosStr = new String(lDados, StandardCharsets.UTF_8);
+                    OnlineMapLoader.atualizarOuInserirEntidade((ExEntity) SalvarCarregar.fromJson(lDadosStr, ExEntity.class));
 
+                    break;
+
+                case kdFecharServidor:
+                    OnlineMapLoader.aIsOnline = false;
+                    OnlineMapLoader.aIsConectado = false;
+                    OnlineMapLoader.entities.clear();
+                    lIsRunning = false;
+                    in.close();
+                    out.close();
+                    socket.close();
                     break;
 
                 default:
