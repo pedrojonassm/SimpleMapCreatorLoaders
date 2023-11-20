@@ -3,12 +3,14 @@ package online.servidor;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 import files.SalvarCarregar;
 import main.Uteis;
 import online.client.entities.ExEntity;
 import online.servidor.Server.KDOqFoiEnviado;
+import world.Tile;
+import world.World;
 
 public class ServerConnection implements Runnable {
     public DataOutputStream out;
@@ -37,7 +39,6 @@ public class ServerConnection implements Runnable {
         int lDadoRecebido;
         KDOqFoiEnviado lKDOqFoiEnviado;
         byte[] lDados;
-        String lDadosStr = null;
         while (lIsRunning) {
             try {
 
@@ -53,14 +54,13 @@ public class ServerConnection implements Runnable {
                         out.writeBoolean(true);
                         aJogador.setIdentificadorServidor(pos);
                         Server.entrar_servidor(this, pos);
-                        lDadosStr = SalvarCarregar.toJSON(aJogador);
-                        lDados = lDadosStr.getBytes(StandardCharsets.UTF_8);
+                        lDados = SalvarCarregar.toBytes(aJogador);
                         out.writeInt(lDados.length);
                         out.write(lDados);
                         Server.filaEspera.remove(this);
 
                         for (ServerConnection iServerConnection : Server.playersConectados) {
-                            if (iServerConnection == null || iServerConnection.getPlayerid() == aJogador.getIdentificadorServidor())
+                            if (iServerConnection == null || iServerConnection.getPlayerid() == getPlayerid())
                                 continue;
 
                             iServerConnection.sendObject(KDOqFoiEnviado.kdAtualizarPlayer, aJogador);
@@ -77,18 +77,30 @@ public class ServerConnection implements Runnable {
                     if (aJogador.getIdentificadorServidor() == null)
                         break;
                     Server.playersConectados[aJogador.getIdentificadorServidor()] = null;
-                    Server.sendIntToEveryOneExceptMe(lKDOqFoiEnviado, aJogador.getIdentificadorServidor(),
-                            aJogador.getIdentificadorServidor());
+                    Server.sendIntToEveryOneExceptMe(lKDOqFoiEnviado, getPlayerid(), getPlayerid());
 
                     break;
 
                 case kdAtualizarPlayer:
                     lDados = new byte[in.readInt()];
-                    in.read(lDados);
-                    lDadosStr = new String(lDados, StandardCharsets.UTF_8);
-                    aJogador = (ExEntity) SalvarCarregar.fromJson(lDadosStr, ExEntity.class);
-                    Server.sendByteArrayToEveryOneExceptMe(KDOqFoiEnviado.kdAtualizarPlayer, lDados, aJogador.getIdentificadorServidor());
+                    in.readFully(lDados);
+                    aJogador = (ExEntity) SalvarCarregar.fromByteArray(lDados, ExEntity.class);
+                    Server.sendByteArrayToEveryOneExceptMe(KDOqFoiEnviado.kdAtualizarPlayer, lDados, getPlayerid());
 
+                    break;
+
+                case kdCarregarMapaAoRedor:
+                    lDados = new byte[in.readInt()];
+                    in.readFully(lDados);
+                    ArrayList<Tile> lCoTile = World
+                            .pegarTiles((ArrayList<Integer>) SalvarCarregar.fromByteArrayToList(lDados, Integer.class));
+                    sendObject(KDOqFoiEnviado.kdCarregarMapaAoRedor, lCoTile);
+                    break;
+
+                case kdAtualizarTile:
+                    lDados = new byte[in.readInt()];
+                    in.readFully(lDados);
+                    Server.sendByteArrayToEveryOneExceptMe(KDOqFoiEnviado.kdAtualizarTile, lDados, getPlayerid());
                     break;
 
                 default:
@@ -114,8 +126,7 @@ public class ServerConnection implements Runnable {
     }
 
     public void sendObject(KDOqFoiEnviado prKDOqFoiEnviado, Object prEnvio) {
-        String lJson = SalvarCarregar.toJSON(prEnvio);
-        sendByteArray(prKDOqFoiEnviado, lJson.getBytes(StandardCharsets.UTF_8));
+        sendByteArray(prKDOqFoiEnviado, SalvarCarregar.toBytes(prEnvio));
     }
 
     public void sendByteArray(KDOqFoiEnviado prKDOqFoiEnviado, byte[] prEnvio) {

@@ -23,16 +23,23 @@ public class Uteis {
         return k;
     }
 
-    public static int[] calcularPosicaoSemAltura(int prPos) {
+    public static int[] calcularPosicaoComAltura(int prPos) {
         int[] retorno = { 0, 0, 0 };
-        retorno[0] = (int) ((prPos % (World.WIDTH * World.HIGH)) / World.HIGH) * OnlineMapLoader.TileSize - Camera.x;
-        retorno[1] = (int) (prPos / World.HEIGHT / World.HIGH) * OnlineMapLoader.TileSize - Camera.y;
+        retorno[0] = (int) ((prPos % (World.WIDTH * World.HIGH)) / World.HIGH) * OnlineMapLoader.TileSize;
+        retorno[1] = (int) (prPos / World.HEIGHT / World.HIGH) * OnlineMapLoader.TileSize;
         retorno[2] = (prPos % World.HIGH);
         return retorno;
     }
 
-    public static int[] calcularPosicaoComAltura(int prPos) {
-        int[] retorno = calcularPosicaoSemAltura(prPos);
+    public static int[] calcularPosicaoSemAlturaRelativoACamera(int prPos) {
+        int[] retorno = calcularPosicaoComAltura(prPos);
+        retorno[0] -= Camera.x;
+        retorno[1] -= Camera.y;
+        return retorno;
+    }
+
+    public static int[] calcularPosicaoComAlturaRelativoACamera(int prPos) {
+        int[] retorno = calcularPosicaoSemAlturaRelativoACamera(prPos);
         int lSubtract = (prPos % World.HIGH) * OnlineMapLoader.TileSize;
         retorno[0] -= lSubtract;
         retorno[1] -= lSubtract;

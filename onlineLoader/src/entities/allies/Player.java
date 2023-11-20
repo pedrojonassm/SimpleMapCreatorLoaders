@@ -28,6 +28,7 @@ public class Player extends Entity implements tickRender {
         updateCamera();
         if (x != lX || lY != y || lZ != z)
             sendTToServer(KDOqFoiEnviado.kdAtualizarPlayer);
+
     }
 
     public void entrarNoServidor(ExEntity prEntity) {

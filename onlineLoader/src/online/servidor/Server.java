@@ -10,18 +10,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
 import files.SalvarCarregar;
+import main.OnlineMapLoader;
 import world.World;
 
 public class Server implements Runnable {
 
     public enum KDOqFoiEnviado {
-        kdConectar, kdDesconectar, kdAtualizarPlayer, kdFecharServidor
+        kdConectar, kdDesconectar, kdFecharServidor, kdAtualizarPlayer, kdCarregarMapaAoRedor, kdAtualizarTile
     }
 
     private static Server server;
@@ -39,6 +39,7 @@ public class Server implements Runnable {
 
     public static void main(String[] args) {
         server = new Server();
+        OnlineMapLoader.instance = new OnlineMapLoader(true);
         File file = new File("settings.txt");
         try {
             if (!file.exists()) {
@@ -177,8 +178,7 @@ public class Server implements Runnable {
     }
 
     public static void sendObjectToEveryOneExceptMe(KDOqFoiEnviado prOqFoiEnviado, Object prConteudo, Integer prMe) {
-        String lConteudo = SalvarCarregar.toJSON(prConteudo);
-        sendByteArrayToEveryOneExceptMe(prOqFoiEnviado, lConteudo.getBytes(StandardCharsets.UTF_8), prMe);
+        sendByteArrayToEveryOneExceptMe(prOqFoiEnviado, SalvarCarregar.toBytes(prConteudo), prMe);
     }
 
     public static void sendByteArrayToEveryOneExceptMe(KDOqFoiEnviado prOqFoiEnviado, byte[] prConteudo, Integer prMe) {

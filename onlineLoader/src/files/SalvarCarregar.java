@@ -11,10 +11,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 import main.OnlineMapLoader;
 import main.configs.ExConfig;
@@ -131,6 +135,8 @@ public class SalvarCarregar {
 
         try {
             lObjectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true);
+            lObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            lObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
             lJSON = lObjectMapper.writeValueAsString(prObj) + "\n";
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -138,15 +144,80 @@ public class SalvarCarregar {
         return lJSON;
     }
 
+    public static byte[] toBytes(final Object prObj) {
+        ObjectMapper lObjectMapper = new ObjectMapper();
+
+        try {
+            lObjectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true);
+            lObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            lObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+            return lObjectMapper.writeValueAsBytes(prObj);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static <T> Object fromJson(String prJson, Class<T> prClass) {
         ObjectMapper lObjectMapper = new ObjectMapper();
         try {
             lObjectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true);
+            lObjectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true);
+            lObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            lObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
             return lObjectMapper.readValue(prJson, prClass);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static <T> Object fromByteArray(byte[] prBytes, Class<T> prClass) {
+        ObjectMapper lObjectMapper = new ObjectMapper();
+        try {
+            lObjectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true);
+            lObjectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true);
+            lObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            lObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+            return lObjectMapper.readValue(prBytes, prClass);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> fromJsonToList(String prJson, Class<T> prClass) {
+        ObjectMapper lObjectMapper = new ObjectMapper();
+        try {
+
+            lObjectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true);
+            lObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            lObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+            CollectionType type = lObjectMapper.getTypeFactory().constructCollectionType(List.class, prClass);
+            return lObjectMapper.readValue(prJson, type);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> fromByteArrayToList(byte[] prByte, Class<T> prClass) {
+        ObjectMapper lObjectMapper = new ObjectMapper();
+        try {
+
+            lObjectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true);
+            lObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            lObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+            CollectionType type = lObjectMapper.getTypeFactory().constructCollectionType(List.class, prClass);
+            return lObjectMapper.readValue(prByte, type);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+
     }
 
     public static Tile[] carregarMundo(File prfile) throws Exception {

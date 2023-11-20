@@ -64,7 +64,7 @@ public class World {
     public static Tile pegarAdicionarTileMundo(int prPos) {
         Tile lRetorno = World.pegar_chao(prPos);
         if (lRetorno == null && prPos >= 0 && prPos < tiles.length) {
-            int[] lPosXY = Uteis.calcularPosicaoSemAltura(prPos);
+            int[] lPosXY = Uteis.calcularPosicaoSemAlturaRelativoACamera(prPos);
             lRetorno = new Tile(lPosXY[0] + Camera.x, lPosXY[1] + Camera.y, lPosXY[2]);
             tiles[prPos] = lRetorno;
         }
@@ -75,7 +75,7 @@ public class World {
         int lPos = World.calcular_pos(x, y, z);
         Tile lRetorno = World.pegar_chao(lPos);
         if (lRetorno == null && lPos >= 0 && lPos < tiles.length) {
-            int[] lPosXY = Uteis.calcularPosicaoSemAltura(lPos);
+            int[] lPosXY = Uteis.calcularPosicaoSemAlturaRelativoACamera(lPos);
             lRetorno = new Tile(lPosXY[0] + Camera.x, lPosXY[1] + Camera.y, z);
             tiles[lPos] = lRetorno;
         }
@@ -95,6 +95,14 @@ public class World {
 
     public static int calcular_pos(int mx, int my, int mz) {
         return ((mx >> log_ts) + (my >> log_ts) * World.WIDTH) * World.HIGH + mz;
+    }
+
+    public static Tile pegar_chao_sem_shift(int mx, int my, int mz) {
+        return pegar_chao(calcular_pos_sem_shift(mx, my, mz));
+    }
+
+    public static int calcular_pos_sem_shift(int mx, int my, int mz) {
+        return (mx + my * World.WIDTH) * World.HIGH + mz;
     }
 
     public void tick() {
@@ -210,4 +218,50 @@ public class World {
         return spritesCarregados.get(Key)[posicao];
     }
 
+    public static ArrayList<Tile> pegarTiles(ArrayList<Integer> prPosicoes) {
+        ArrayList<Tile> lCoTiles = new ArrayList<>();
+        for (int iPosicao : prPosicoes) {
+            if (iPosicao >= 0 && iPosicao < tiles.length)
+                lCoTiles.add(tiles[iPosicao]);
+        }
+        return lCoTiles;
+    }
+
+    public static ArrayList<Tile> pegarTilesAoRedor(int prPos) {
+        ArrayList<Tile> lCoTiles = new ArrayList<>();
+        Tile lTile = World.pegar_chao(prPos);
+        Tile lTileMinima = pegar_chao(lTile.getX() - 8 * OnlineMapLoader.TileSize, lTile.getY() - 7 * OnlineMapLoader.TileSize, 0),
+                lTileMaxima = pegar_chao(lTile.getX() + 8 * OnlineMapLoader.TileSize, lTile.getY() + 7 * OnlineMapLoader.TileSize, 0);
+        int lPosMinimo = 0, lPosMaximo = tiles.length - 1;
+        if (lTileMinima != null)
+            lPosMinimo = lTileMinima.getaPos();
+        if (lTileMaxima != null)
+            lPosMaximo = lTileMaxima.getaPos();
+        for (int i = lPosMinimo; i < lPosMaximo; i++) {
+            if (tiles[i] != null && !tiles[i].estaVazio())
+                lCoTiles.add(tiles[i]);
+        }
+        return lCoTiles;
+    }
+
+    public static ArrayList<Integer> pegarPosicoesTilesAoRedor(int prPos) {
+        ArrayList<Tile> lCoTiles = pegarTilesAoRedor(prPos);
+        ArrayList<Integer> lCoRetorno = new ArrayList<>();
+        for (Tile iTile : lCoTiles)
+            lCoRetorno.add(iTile.getaPos());
+        return lCoRetorno;
+    }
+
+    public static void atualizarTiles(ArrayList<Tile> prCoTiles) {
+        for (Tile iTile : prCoTiles) {
+            atualizarTile(iTile);
+        }
+    }
+
+    public static void atualizarTile(Tile prTile) {
+        if (tiles[prTile.getaPos()] != null)
+            tiles[prTile.getaPos()].atualizar(prTile);
+        else
+            tiles[prTile.getaPos()] = prTile;
+    }
 }

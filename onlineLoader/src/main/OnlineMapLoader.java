@@ -75,7 +75,7 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
 
     public static Server aServer = null;
 
-    public OnlineMapLoader() {
+    public OnlineMapLoader(Boolean prIsServer) {
         instance = this;
         arcoInicial = arcoFinal = 0;
         aIsConectado = aIsOnline = false;
@@ -85,28 +85,30 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
         podeNovaMovimentacao = true;
         aFonte = new Font("arial", Font.PLAIN, 20);
         if (World.ok) {
-            entities = new ArrayList<>();
             startGerador();
-            initFrame();
-            aClientConnection = new ClientConnection();
+            if (!prIsServer) {
+                initFrame();
+                aClientConnection = new ClientConnection();
+            }
 
         }
 
     }
 
     public void startGerador() {
-        TileSize = aConfig.getTileSize();
-        player = new Player(aConfig.getPlayerX(), aConfig.getPlayerY(), 0);
+        entities = new ArrayList<>();
+        OnlineMapLoader.TileSize = aConfig.getTileSize();
         World.log_ts = Uteis.log(OnlineMapLoader.TileSize, 2);
-        ui = new Ui();
-        World.carregarSprites();
-        control = shift = clique_no_mapa = false;
         random = new Random();
-        image = new BufferedImage(windowWidth, windowHEIGHT, BufferedImage.TYPE_INT_RGB);
-        World.ready = true;
     }
 
     public void initFrame() {
+        player = new Player(aConfig.getPlayerX(), aConfig.getPlayerY(), 0);
+        ui = new Ui();
+        World.carregarSprites();
+        control = shift = clique_no_mapa = false;
+        image = new BufferedImage(windowWidth, windowHEIGHT, BufferedImage.TYPE_INT_RGB);
+        World.ready = true;
         addKeyListener(this);
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -158,7 +160,7 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
     }
 
     public static void main(String args[]) {
-        OnlineMapLoader gerador = new OnlineMapLoader();
+        OnlineMapLoader gerador = new OnlineMapLoader(false);
         if (World.ok)
             gerador.start();
     }
@@ -234,7 +236,7 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
             world.render(g);
 
             g.setColor(Color.red);
-            int[] localDesenho = Uteis.calcularPosicaoSemAltura(aPos);
+            int[] localDesenho = Uteis.calcularPosicaoSemAlturaRelativoACamera(aPos);
             g.drawRect(localDesenho[0], localDesenho[1], TileSize, TileSize);
             for (Entity iEntity : entities)
                 iEntity.render(g);
@@ -379,7 +381,7 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
                 ui.cliqueUi = true;
             }
         } else if (e.getButton() == MouseEvent.BUTTON2) {
-            int[] teste = Uteis.calcularPosicaoSemAltura(aPos);
+            int[] teste = Uteis.calcularPosicaoSemAlturaRelativoACamera(aPos);
             System.out.println("cx: " + Camera.x + " cy: " + Camera.y);
             System.out.println("pos: " + aPos);
             System.out.println("tem tile: " + (lEscolhido != null));

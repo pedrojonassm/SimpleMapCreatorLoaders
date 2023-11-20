@@ -157,8 +157,7 @@ public class TelaSelecionarServidor implements Tela {
                 Integer lPort = Integer.parseInt(lPorta.getText());
 
                 // TODO: ao conectar ele vai tentar automaticamente entrar. Mas possa ser que seja um server com vários personagens, então
-                // teria um passo mais
-                // Então como isso é uma base, deixaremos assim
+                // teria um passo mais. Então como isso é uma base, deixaremos assim
                 if (!conectar(lIpText, lPort))
                     JOptionPane.showMessageDialog(null, "Não foi possível realizar a conexão com o servidor.");
                 else

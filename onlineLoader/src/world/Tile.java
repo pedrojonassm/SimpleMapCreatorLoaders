@@ -14,6 +14,8 @@ import graficos.ConjuntoSprites;
 import graficos.Ui;
 import main.OnlineMapLoader;
 import main.interfaces.tickRender;
+import online.client.ClientConnection;
+import online.servidor.Server.KDOqFoiEnviado;
 
 public class Tile implements tickRender {
     private ArrayList<ConjuntoSprites> CoConjuntoSprites;
@@ -203,6 +205,15 @@ public class Tile implements tickRender {
         return false;
     }
 
+    public boolean estaVazio() {
+        if (aPropriedades != null && !aPropriedades.isEmpty())
+            return false;
+
+        if (tem_sprites())
+            return false;
+        return true;
+    }
+
     public void addPropriedades(HashMap<String, Object> prPropriedades) {
         if (aPropriedades == null)
             aPropriedades = new HashMap<>();
@@ -268,7 +279,7 @@ public class Tile implements tickRender {
         return false;
     }
 
-    public List<ConjuntoSprites> getCoConjuntoSprites() {
+    public ArrayList<ConjuntoSprites> getCoConjuntoSprites() {
         return CoConjuntoSprites;
     }
 
@@ -284,25 +295,26 @@ public class Tile implements tickRender {
         this.aPropriedades = aPropriedades;
     }
 
-    public static int tileExisteLista(int prPos, ArrayList<Tile> prTilesList) {
-        for (int i = 0; i < prTilesList.size(); i++) {
-            Tile iTile = prTilesList.get(i);
-            if (prPos == iTile.getaPos()) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     public static int pegarPosicaoRelativa(int prFromX, int prFromY, int prFromZ, List<Integer> prPosicaoRelativa) {
         return World.calcular_pos(prFromX + (prPosicaoRelativa.get(0) << World.log_ts),
                 prFromY + (prPosicaoRelativa.get(1) << World.log_ts), prFromZ + prPosicaoRelativa.get(2));
     }
 
     public void dispararEventos() {
+        Boolean lEnviar = false;
+        lEnviar = true;
         for (Entry<String, Object> iEntrySet : aPropriedades.entrySet()) {
             System.out.println(iEntrySet.getKey() + " = " + iEntrySet.getValue());
         }
+
+        if (lEnviar)
+            ClientConnection.sendObject(KDOqFoiEnviado.kdAtualizarTile, this);
+    }
+
+    public void atualizar(Tile prTile) {
+        setaPropriedades(prTile.getaPropriedades());
+        setPosicao_Conjunto(prTile.getPosicao_Conjunto());
+        setCoConjuntoSprites(prTile.getCoConjuntoSprites());
     }
 
 }

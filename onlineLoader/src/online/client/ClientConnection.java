@@ -4,13 +4,15 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 import files.SalvarCarregar;
 import main.OnlineMapLoader;
 import main.Uteis;
 import online.client.entities.ExEntity;
 import online.servidor.Server.KDOqFoiEnviado;
+import world.Tile;
+import world.World;
 
 public class ClientConnection implements Runnable {
     private Socket socket;
@@ -24,15 +26,15 @@ public class ClientConnection implements Runnable {
 
     }
 
-    public static void send(KDOqFoiEnviado prKDOqFoiEnviado, Object prEnvio) {
+    public static void sendObject(KDOqFoiEnviado prKDOqFoiEnviado, Object prEnvio) {
         if (prKDOqFoiEnviado == null || out == null)
             return;
         try {
             out.writeInt(prKDOqFoiEnviado.ordinal());
             if (prEnvio != null) {
-                String lConteudo = SalvarCarregar.toJSON(prEnvio);
-                out.writeInt(lConteudo.getBytes(StandardCharsets.UTF_8).length);
-                out.write(lConteudo.getBytes(StandardCharsets.UTF_8));
+                byte[] lConteudo = SalvarCarregar.toBytes(prEnvio);
+                out.writeInt(lConteudo.length);
+                out.write(lConteudo);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,7 +42,7 @@ public class ClientConnection implements Runnable {
     }
 
     public static void send(KDOqFoiEnviado prKDOqFoiEnviado) {
-        send(prKDOqFoiEnviado, null);
+        sendObject(prKDOqFoiEnviado, null);
     }
 
     @Override
@@ -50,7 +52,6 @@ public class ClientConnection implements Runnable {
         int lDadoRecebido;
         KDOqFoiEnviado lKDOqFoiEnviado;
         byte[] lDados;
-        String lDadosStr;
         while (lIsRunning) {
             try {
 
@@ -62,9 +63,12 @@ public class ClientConnection implements Runnable {
                 case kdConectar:
                     if (in.readBoolean()) {
                         lDados = new byte[in.readInt()];
-                        in.read(lDados);
-                        lDadosStr = new String(lDados, StandardCharsets.UTF_8);
-                        OnlineMapLoader.player.entrarNoServidor((ExEntity) SalvarCarregar.fromJson(lDadosStr, ExEntity.class));
+                        in.readFully(lDados);
+                        OnlineMapLoader.player.entrarNoServidor((ExEntity) SalvarCarregar.fromByteArray(lDados, ExEntity.class));
+                        // carregar mapa
+                        sendObject(KDOqFoiEnviado.kdCarregarMapaAoRedor,
+                                World.pegarPosicoesTilesAoRedor(World.calcular_pos(OnlineMapLoader.player.getX(),
+                                        OnlineMapLoader.player.getY(), OnlineMapLoader.player.getZ())));
 
                     }
                     break;
@@ -74,9 +78,8 @@ public class ClientConnection implements Runnable {
 
                 case kdAtualizarPlayer:
                     lDados = new byte[in.readInt()];
-                    in.read(lDados);
-                    lDadosStr = new String(lDados, StandardCharsets.UTF_8);
-                    OnlineMapLoader.atualizarOuInserirEntidade((ExEntity) SalvarCarregar.fromJson(lDadosStr, ExEntity.class));
+                    in.readFully(lDados);
+                    OnlineMapLoader.atualizarOuInserirEntidade((ExEntity) SalvarCarregar.fromByteArray(lDados, ExEntity.class));
 
                     break;
 
@@ -88,6 +91,19 @@ public class ClientConnection implements Runnable {
                     in.close();
                     out.close();
                     socket.close();
+                    break;
+
+                case kdCarregarMapaAoRedor:
+                    lDados = new byte[in.readInt()];
+                    in.readFully(lDados);
+                    ArrayList<Tile> lCoTiles = (ArrayList<Tile>) SalvarCarregar.fromByteArrayToList(lDados, Tile.class);
+                    World.atualizarTiles(lCoTiles);
+                    break;
+
+                case kdAtualizarTile:
+                    lDados = new byte[in.readInt()];
+                    in.readFully(lDados);
+                    World.atualizarTile((Tile) SalvarCarregar.fromByteArray(lDados, Tile.class));
                     break;
 
                 default:

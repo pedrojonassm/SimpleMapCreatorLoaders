@@ -184,7 +184,7 @@ public class Entity implements tickRender {
 
     protected void sendTToServer(KDOqFoiEnviado prKdOqFoiEnviado) {
         aExEntity.update(this);
-        ClientConnection.send(prKdOqFoiEnviado, aExEntity);
+        ClientConnection.sendObject(prKdOqFoiEnviado, aExEntity);
     }
 
     public void changeAnimation() {
