@@ -300,15 +300,62 @@ public class Tile implements tickRender {
                 prFromY + (prPosicaoRelativa.get(1) << World.log_ts), prFromZ + prPosicaoRelativa.get(2));
     }
 
-    public void dispararEventos() {
+    public void dispararEventoUnico(String prEvento) {
         Boolean lEnviar = false;
-        lEnviar = true;
-        for (Entry<String, Object> iEntrySet : aPropriedades.entrySet()) {
-            System.out.println(iEntrySet.getKey() + " = " + iEntrySet.getValue());
+        switch (prEvento) {
+        case "ProximoConjuntoAoInteragir":
+            if (getPropriedade("ProximoConjuntoAoInteragir") != null) {
+                try {
+                    posicao_Conjunto += Integer.parseInt(getPropriedade("ProximoConjuntoAoInteragir").toString());
+                } catch (Exception e) {
+                    posicao_Conjunto++;
+                }
+
+                if (posicao_Conjunto >= CoConjuntoSprites.size())
+                    posicao_Conjunto = 0;
+                lEnviar = true;
+            }
+            break;
+
+        case "TrocarConjuntoDePara":
+            if (getPropriedade("TrocarConjuntoDePara") != null) {
+                try {
+                    String[] lSet = getPropriedade("TrocarConjuntoDePara").toString().split("=");
+                    Tile lTile = World.pegar_chao(Integer.parseInt(lSet[0]));
+                    if (lTile != null)
+                        lTile.setPosicao_Conjunto(Integer.parseInt(lSet[1]));
+
+                    ClientConnection.sendObject(KDOqFoiEnviado.kdTileAtualizado, lTile);
+                } catch (Exception e) {
+                }
+            }
+            break;
+
+        case "TrocarConjuntoAoInteragirPara":
+            if (getPropriedade("TrocarConjuntoAoInteragirPara") != null) {
+                try {
+                    setPosicao_Conjunto(Integer.parseInt(getPropriedade("TrocarConjuntoAoInteragirPara").toString()));
+                    lEnviar = true;
+                } catch (Exception e) {
+                }
+            }
+            break;
+
+        default:
+            break;
         }
 
         if (lEnviar)
             ClientConnection.sendObject(KDOqFoiEnviado.kdTileAtualizado, this);
+
+    }
+
+    public void dispararEventos() {
+
+        for (Entry<String, Object> iEntrySet : aPropriedades.entrySet()) {
+            dispararEventoUnico(iEntrySet.getKey());
+        }
+
     }
 
     public void atualizar(Tile prTile) {

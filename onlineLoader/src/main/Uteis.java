@@ -46,6 +46,14 @@ public class Uteis {
         return retorno;
     }
 
+    public static int[] posToXYZ(int prPos) {
+        int[] retorno = { 0, 0, 0 };
+        retorno[0] = (int) ((prPos % (World.WIDTH * World.HIGH)) / World.HIGH);
+        retorno[1] = (int) (prPos / World.HEIGHT / World.HIGH);
+        retorno[2] = (prPos % World.HIGH);
+        return retorno;
+    }
+
     public static boolean isEnumValueValid(Integer lValue, Class prEnum) {
         return lValue != null && prEnum.isEnum() && lValue >= 0 && lValue < prEnum.getEnumConstants().length;
     }

@@ -229,19 +229,26 @@ public class World {
 
     public static ArrayList<Tile> pegarTilesAoRedor(int prPos) {
         ArrayList<Tile> lCoTiles = new ArrayList<>();
-        Tile lTile = World.pegar_chao(prPos);
-        Tile lTileMinima = pegar_chao(lTile.getX() - OnlineMapLoader.windowWidth / 2, lTile.getY() - OnlineMapLoader.windowHEIGHT / 2, 0),
-                lTileMaxima = pegar_chao(lTile.getX() + OnlineMapLoader.windowWidth / 2, lTile.getY() + OnlineMapLoader.windowHEIGHT / 2,
-                        0);
-        int lPosMinimo = 0, lPosMaximo = tiles.length - 1;
-        if (lTileMinima != null)
-            lPosMinimo = lTileMinima.getaPos();
-        if (lTileMaxima != null)
-            lPosMaximo = lTileMaxima.getaPos();
-        for (int i = lPosMinimo; i <= lPosMaximo; i++) {
-            if (tiles[i] != null && !tiles[i].estaVazio())
-                lCoTiles.add(tiles[i]);
+        int[] lPosicoesMinimas = Uteis.posToXYZ(prPos);
+        lPosicoesMinimas[0] = lPosicoesMinimas[0] - 1 - (OnlineMapLoader.windowWidth / 2) / OnlineMapLoader.TileSize;
+        lPosicoesMinimas[1] = lPosicoesMinimas[1] - 1 - (OnlineMapLoader.windowHEIGHT / 2) / OnlineMapLoader.TileSize;
+        Tile lTile = null;
+        for (int xx = lPosicoesMinimas[0]; xx <= lPosicoesMinimas[0] + OnlineMapLoader.windowWidth / OnlineMapLoader.TileSize; xx++) {
+            if (xx < 0)
+                continue;
+            for (int yy = lPosicoesMinimas[1]; yy <= lPosicoesMinimas[1] + OnlineMapLoader.windowHEIGHT / OnlineMapLoader.TileSize; yy++) {
+                if (yy < 0)
+                    continue;
+                for (int zz = 0; zz < HIGH; zz++) {
+                    lTile = pegar_chao_sem_shift(xx, yy, zz);
+                    if (lTile != null && !lTile.estaVazio()) {
+                        lCoTiles.add(lTile);
+                        lTile.addPropriedade("branco", 1);
+                    }
+                }
+            }
         }
+
         return lCoTiles;
     }
 
@@ -255,21 +262,28 @@ public class World {
 
     public static ArrayList<Tile> pegarBordaAoRedor(int prPos) {
         ArrayList<Tile> lCoTiles = new ArrayList<>();
-        Tile lTile = World.pegar_chao(prPos);
-        Tile lTileMinima = pegar_chao(lTile.getX() - OnlineMapLoader.windowWidth / 2, lTile.getY() - OnlineMapLoader.windowHEIGHT / 2, 0),
-                lTileMaxima = pegar_chao(lTile.getX() + OnlineMapLoader.windowWidth / 2, lTile.getY() + OnlineMapLoader.windowHEIGHT / 2,
-                        0);
-        int lPosMinimo = 0, lPosMaximo = tiles.length - 1;
-        if (lTileMinima != null)
-            lPosMinimo = lTileMinima.getaPos();
-        if (lTileMaxima != null)
-            lPosMaximo = lTileMaxima.getaPos();
+        int[] lPosicoesMinimas = Uteis.posToXYZ(prPos), lPosicoesMaximas = { WIDTH, HEIGHT, HIGH };
+        lPosicoesMinimas[0] = lPosicoesMinimas[0] - 1 - (OnlineMapLoader.windowWidth / 2) / OnlineMapLoader.TileSize;
+        lPosicoesMinimas[1] = lPosicoesMinimas[1] - 1 - (OnlineMapLoader.windowHEIGHT / 2) / OnlineMapLoader.TileSize;
+        lPosicoesMaximas[0] = lPosicoesMinimas[0] + OnlineMapLoader.windowWidth / OnlineMapLoader.TileSize;
+        lPosicoesMaximas[1] = lPosicoesMinimas[1] + OnlineMapLoader.windowHEIGHT / OnlineMapLoader.TileSize;
+        Tile lTile = null;
+        for (int xx = lPosicoesMinimas[0]; xx <= lPosicoesMaximas[0]; xx++) {
+            if (xx < 0)
+                continue;
+            for (int yy = lPosicoesMinimas[1]; yy <= lPosicoesMaximas[1]; yy++) {
+                if (yy < 0 || (yy != lPosicoesMinimas[1] && yy != lPosicoesMaximas[1] && xx != lPosicoesMinimas[0]
+                        && xx != lPosicoesMaximas[0]))
+                    continue;
 
-        for (int i = lPosMinimo; i <= lPosMaximo; i++) {
-            if (tiles[i] != null && !tiles[i].estaVazio() && (tiles[i].getX() == lTileMinima.getX() || tiles[i].getX() == lTileMaxima.getX()
-                    || tiles[i].getY() == lTileMinima.getY() || tiles[i].getY() == lTileMaxima.getY()))
-                lCoTiles.add(tiles[i]);
-
+                for (int zz = 0; zz < HIGH; zz++) {
+                    lTile = pegar_chao_sem_shift(xx, yy, zz);
+                    if (lTile != null && !lTile.estaVazio()) {
+                        lCoTiles.add(lTile);
+                        lTile.addPropriedade("branco", 1);
+                    }
+                }
+            }
         }
 
         return lCoTiles;

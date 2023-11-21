@@ -381,11 +381,12 @@ public class OnlineMapLoader extends Canvas implements Runnable, KeyListener, Mo
                 ui.cliqueUi = true;
             }
         } else if (e.getButton() == MouseEvent.BUTTON2) {
-            int[] teste = Uteis.calcularPosicaoSemAlturaRelativoACamera(aPos);
+            int[] teste = Uteis.posToXYZ(aPos);
             System.out.println("cx: " + Camera.x + " cy: " + Camera.y);
             System.out.println("pos: " + aPos);
             System.out.println("tem tile: " + (lEscolhido != null));
             System.out.println("tx: " + teste[0] + " ty: " + teste[1] + " tz: " + teste[2] + "\n");
+            System.out.println("pos pós teste: " + World.pegar_chao_sem_shift(teste[0], teste[1], teste[2]).getaPos());
             return;
         } else if (e.getButton() == MouseEvent.BUTTON3) {
             if (ui.cliquedireito(e.getX(), e.getY()) || !aIsOnline)
