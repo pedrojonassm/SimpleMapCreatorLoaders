@@ -21,7 +21,7 @@ import world.World;
 public class Server implements Runnable {
 
     public enum KDOqFoiEnviado {
-        kdConectar, kdDesconectar, kdFecharServidor, kdAtualizarPlayer, kdCarregarMapaAoRedor, kdAtualizarTile
+        kdConectar, kdDesconectar, kdFecharServidor, kdAtualizarPlayer, kdPedirTiles, kdTileAtualizado
     }
 
     private static Server server;

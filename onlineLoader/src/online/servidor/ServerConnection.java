@@ -89,18 +89,18 @@ public class ServerConnection implements Runnable {
 
                     break;
 
-                case kdCarregarMapaAoRedor:
+                case kdPedirTiles:
                     lDados = new byte[in.readInt()];
                     in.readFully(lDados);
                     ArrayList<Tile> lCoTile = World
                             .pegarTiles((ArrayList<Integer>) SalvarCarregar.fromByteArrayToList(lDados, Integer.class));
-                    sendObject(KDOqFoiEnviado.kdCarregarMapaAoRedor, lCoTile);
+                    sendObject(KDOqFoiEnviado.kdPedirTiles, lCoTile);
                     break;
 
-                case kdAtualizarTile:
+                case kdTileAtualizado:
                     lDados = new byte[in.readInt()];
                     in.readFully(lDados);
-                    Server.sendByteArrayToEveryOneExceptMe(KDOqFoiEnviado.kdAtualizarTile, lDados, getPlayerid());
+                    Server.sendByteArrayToEveryOneExceptMe(KDOqFoiEnviado.kdTileAtualizado, lDados, getPlayerid());
                     break;
 
                 default:

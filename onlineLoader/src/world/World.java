@@ -230,22 +230,53 @@ public class World {
     public static ArrayList<Tile> pegarTilesAoRedor(int prPos) {
         ArrayList<Tile> lCoTiles = new ArrayList<>();
         Tile lTile = World.pegar_chao(prPos);
-        Tile lTileMinima = pegar_chao(lTile.getX() - 8 * OnlineMapLoader.TileSize, lTile.getY() - 7 * OnlineMapLoader.TileSize, 0),
-                lTileMaxima = pegar_chao(lTile.getX() + 8 * OnlineMapLoader.TileSize, lTile.getY() + 7 * OnlineMapLoader.TileSize, 0);
+        Tile lTileMinima = pegar_chao(lTile.getX() - OnlineMapLoader.windowWidth / 2, lTile.getY() - OnlineMapLoader.windowHEIGHT / 2, 0),
+                lTileMaxima = pegar_chao(lTile.getX() + OnlineMapLoader.windowWidth / 2, lTile.getY() + OnlineMapLoader.windowHEIGHT / 2,
+                        0);
         int lPosMinimo = 0, lPosMaximo = tiles.length - 1;
         if (lTileMinima != null)
             lPosMinimo = lTileMinima.getaPos();
         if (lTileMaxima != null)
             lPosMaximo = lTileMaxima.getaPos();
-        for (int i = lPosMinimo; i < lPosMaximo; i++) {
+        for (int i = lPosMinimo; i <= lPosMaximo; i++) {
             if (tiles[i] != null && !tiles[i].estaVazio())
                 lCoTiles.add(tiles[i]);
         }
         return lCoTiles;
     }
 
-    public static ArrayList<Integer> pegarPosicoesTilesAoRedor(int prPos) {
+    public static ArrayList<Integer> pegarPosicoesDosTilesAoRedor(int prPos) {
         ArrayList<Tile> lCoTiles = pegarTilesAoRedor(prPos);
+        ArrayList<Integer> lCoRetorno = new ArrayList<>();
+        for (Tile iTile : lCoTiles)
+            lCoRetorno.add(iTile.getaPos());
+        return lCoRetorno;
+    }
+
+    public static ArrayList<Tile> pegarBordaAoRedor(int prPos) {
+        ArrayList<Tile> lCoTiles = new ArrayList<>();
+        Tile lTile = World.pegar_chao(prPos);
+        Tile lTileMinima = pegar_chao(lTile.getX() - OnlineMapLoader.windowWidth / 2, lTile.getY() - OnlineMapLoader.windowHEIGHT / 2, 0),
+                lTileMaxima = pegar_chao(lTile.getX() + OnlineMapLoader.windowWidth / 2, lTile.getY() + OnlineMapLoader.windowHEIGHT / 2,
+                        0);
+        int lPosMinimo = 0, lPosMaximo = tiles.length - 1;
+        if (lTileMinima != null)
+            lPosMinimo = lTileMinima.getaPos();
+        if (lTileMaxima != null)
+            lPosMaximo = lTileMaxima.getaPos();
+
+        for (int i = lPosMinimo; i <= lPosMaximo; i++) {
+            if (tiles[i] != null && !tiles[i].estaVazio() && (tiles[i].getX() == lTileMinima.getX() || tiles[i].getX() == lTileMaxima.getX()
+                    || tiles[i].getY() == lTileMinima.getY() || tiles[i].getY() == lTileMaxima.getY()))
+                lCoTiles.add(tiles[i]);
+
+        }
+
+        return lCoTiles;
+    }
+
+    public static ArrayList<Integer> pegarPosicoesDaBordaAoRedor(int prPos) {
+        ArrayList<Tile> lCoTiles = pegarBordaAoRedor(prPos);
         ArrayList<Integer> lCoRetorno = new ArrayList<>();
         for (Tile iTile : lCoTiles)
             lCoRetorno.add(iTile.getaPos());

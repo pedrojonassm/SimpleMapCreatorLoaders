@@ -66,8 +66,8 @@ public class ClientConnection implements Runnable {
                         in.readFully(lDados);
                         OnlineMapLoader.player.entrarNoServidor((ExEntity) SalvarCarregar.fromByteArray(lDados, ExEntity.class));
                         // carregar mapa
-                        sendObject(KDOqFoiEnviado.kdCarregarMapaAoRedor,
-                                World.pegarPosicoesTilesAoRedor(World.calcular_pos(OnlineMapLoader.player.getX(),
+                        sendObject(KDOqFoiEnviado.kdPedirTiles,
+                                World.pegarPosicoesDosTilesAoRedor(World.calcular_pos(OnlineMapLoader.player.getX(),
                                         OnlineMapLoader.player.getY(), OnlineMapLoader.player.getZ())));
 
                     }
@@ -93,14 +93,14 @@ public class ClientConnection implements Runnable {
                     socket.close();
                     break;
 
-                case kdCarregarMapaAoRedor:
+                case kdPedirTiles:
                     lDados = new byte[in.readInt()];
                     in.readFully(lDados);
                     ArrayList<Tile> lCoTiles = (ArrayList<Tile>) SalvarCarregar.fromByteArrayToList(lDados, Tile.class);
                     World.atualizarTiles(lCoTiles);
                     break;
 
-                case kdAtualizarTile:
+                case kdTileAtualizado:
                     lDados = new byte[in.readInt()];
                     in.readFully(lDados);
                     World.atualizarTile((Tile) SalvarCarregar.fromByteArray(lDados, Tile.class));

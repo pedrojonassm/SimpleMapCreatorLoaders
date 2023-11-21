@@ -308,7 +308,7 @@ public class Tile implements tickRender {
         }
 
         if (lEnviar)
-            ClientConnection.sendObject(KDOqFoiEnviado.kdAtualizarTile, this);
+            ClientConnection.sendObject(KDOqFoiEnviado.kdTileAtualizado, this);
     }
 
     public void atualizar(Tile prTile) {

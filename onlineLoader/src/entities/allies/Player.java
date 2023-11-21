@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import entities.Entity;
 import main.OnlineMapLoader;
 import main.interfaces.tickRender;
+import online.client.ClientConnection;
 import online.client.entities.ExEntity;
 import online.servidor.Server.KDOqFoiEnviado;
 import world.Camera;
@@ -66,6 +67,15 @@ public class Player extends Entity implements tickRender {
                         OnlineMapLoader.TileSize, OnlineMapLoader.TileSize);
             }
         }
+    }
+
+    @Override
+    protected void iniciarNovaMovimentacaoSQM() {
+        super.iniciarNovaMovimentacaoSQM();
+
+        if (sqm_alvo != null)
+            ClientConnection.sendObject(KDOqFoiEnviado.kdPedirTiles, World.pegarPosicoesDaBordaAoRedor(sqm_alvo.getaPos()));
+
     }
 
     @Override
